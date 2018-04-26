@@ -16,7 +16,7 @@ import java.util.HashMap;
 public class Main extends Application {
 
 	private HashMap<KeyCode, Boolean> keys = new HashMap<KeyCode, Boolean>();
-	private ArrayList<Node> blocks = new ArrayList<>();
+	private ArrayList<Node> blocks = new ArrayList<Node>();
 	private Pane appRoot = new Pane();
 
 	private Pane gameRoot = new Pane();
@@ -35,7 +35,9 @@ public class Main extends Application {
 		levelWidth = LevelData.LEVEL1[0].length();
 
 		for (int i = 0; i < LevelData.LEVEL1.length; i++) {
-			String line = LevelData.LEVEL1[i];
+			String map = LevelData.LEVEL1[i] + LevelData.LEVEL2[i]+ LevelData.LEVEL1[i]+ LevelData.LEVEL2[i]+ LevelData.LEVEL1[i]+ LevelData.LEVEL2[i];
+
+			String line = map;
 			for (int j = 0; j < line.length(); j++) {
 				switch (line.charAt(j)) {
 				case '0':
@@ -51,15 +53,15 @@ public class Main extends Application {
 		// a ????????????
 		player.translateXProperty().addListener((a, old, newValue) -> {
 			int offset = newValue.intValue();
-			if (offset > 360 && offset < levelWidth - 360) {
+			//if (offset > 360 && offset < levelWidth - 360) {
 				gameRoot.setLayoutX(-(offset - 360));
-			}
+			//}
 		});
 		appRoot.getChildren().addAll(background, gameRoot, uiRoot);
 	}
 
 	private void update() {
-		if (isPressed(KeyCode.W) && player.getTranslateY() >= 5) {
+		if (isPressed(KeyCode.W) && player.getTranslateY() >= 0) {
 			jumpPlayer();
 		}
 		if (playerGoDown.getY() < 10) {
