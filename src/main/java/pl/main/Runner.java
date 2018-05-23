@@ -1,6 +1,7 @@
 package pl.main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -18,7 +19,7 @@ public class Runner extends Application{
 	static MenuState menuState;
 	static SubmenuType submenuType;
 	static MainMenu menu;
-	static ArrayList<String> keysActive;
+	static HashMap<String, KeyState> keysActive;
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -41,11 +42,10 @@ public class Runner extends Application{
 		rootPane.getChildren().addAll(canvas);
 		
 		
-		keysActive = new ArrayList(); //stores pressed keys
+		keysActive = new HashMap(); //stores pressed keys
 		menu = new MainMenu(gc);
 		menuState = MenuState.PREPAREMENU;
 		submenuType = SubmenuType.MAIN;
-		
 		//main loop
 		new AnimationTimer() {
 
@@ -58,13 +58,15 @@ public class Runner extends Application{
 		
 		//detects user input
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
+			
 			@Override
 			public void handle(KeyEvent key) {
 				String keyData = key.getCode().toString();
-
-				if (!keysActive.contains(keyData)) {
-					keysActive.add(keyData);
+				
+				if (!keysActive.containsKey(keyData)) {
+					keysActive.put(keyData, KeyState.PRESSED);
+				} else {
+					keysActive.put(keyData, KeyState.HELD);
 				}
 			}
 		});
@@ -90,7 +92,7 @@ public class Runner extends Application{
 			
 		case MAINMENU:
 			userSelectMenuOption();
-			if (keysActive.contains("ENTER")) {
+			if (userPressed("ENTER")) {
 				menuState = MenuState.SUBMENUS; //TODO
 			}
 			break;
@@ -100,11 +102,23 @@ public class Runner extends Application{
 		}
 	}
 	
+	private boolean userPressed(String button) {
+		// TODO Auto-generated method stub
+		if (keysActive.containsKey(button)) {
+			if (keysActive.get(button).vkeyState == KeyState.PRESSED) { //------------------------------------------
+				keyState = KeyState.HELD;
+				return true;
+			}
+			
+		}
+		return false;
+	}
+
 	private void userSelectMenuOption() {
-		if (keysActive.contains("W") || keysActive.contains("UP")) {
+		if (userPressed("W") || userPressed("UP")) {
 			selectPreviousMenuOption();
 		}
-		if (keysActive.contains("S") || keysActive.contains("DOWN")) {
+		if (userPressed("S") || userPressed("DOWN")) {
 			selectNextMenuOption();
 		}
 	}
@@ -126,6 +140,9 @@ public class Runner extends Application{
 		case PLAY: //TODO
 		}
 		
+	}
+	public enum KeyState {
+		PRESSED, HELD
 	}
 
 	public enum MenuState {
