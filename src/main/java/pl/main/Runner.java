@@ -10,7 +10,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -75,27 +74,6 @@ public class Runner extends Application{
 			@Override
 			public void handle(KeyEvent key) {
 				String keyData = key.getCode().toString();
-				keysActive.remove(keyData);
-			}
-		});
-		
-		scene.setOnMouseEntered(new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent mouse) {
-				String keyData = "HOVERED";
-				
-				if (!keysActive.contains(keyData)) {
-					keysActive.add(keyData);
-				}
-			}
-		});
-		
-		scene.setOnMouseExited(new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent mouse) {
-				String keyData = "HOVERED";
 				keysActive.remove(keyData);
 			}
 		});
