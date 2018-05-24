@@ -19,7 +19,7 @@ public class Runner extends Application{
 	static MenuState menuState;
 	static SubmenuType submenuType;
 	static MainMenu menu;
-	static HashMap<String, KeyState> keysActive;
+	HashMap<String, KeyState> keysActive;
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -65,12 +65,10 @@ public class Runner extends Application{
 				
 				if (!keysActive.containsKey(keyData)) {
 					keysActive.put(keyData, KeyState.PRESSED);
-				} else {
-					keysActive.put(keyData, KeyState.HELD);
 				}
 			}
 		});
-
+		
 		scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
 
 			@Override
@@ -93,7 +91,7 @@ public class Runner extends Application{
 		case MAINMENU:
 			userSelectMenuOption();
 			if (userPressed("ENTER")) {
-				menuState = MenuState.SUBMENUS; //TODO
+			//	menuState = MenuState.SUBMENUS; //TODO
 			}
 			break;
 			
@@ -103,13 +101,11 @@ public class Runner extends Application{
 	}
 	
 	private boolean userPressed(String button) {
-		// TODO Auto-generated method stub
 		if (keysActive.containsKey(button)) {
-			if (keysActive.get(button).vkeyState == KeyState.PRESSED) { //------------------------------------------
-				keyState = KeyState.HELD;
+			if (keysActive.get(button) == KeyState.PRESSED) { 
+				keysActive.put(button, KeyState.HELD);
 				return true;
 			}
-			
 		}
 		return false;
 	}
