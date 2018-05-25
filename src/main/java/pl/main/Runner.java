@@ -25,6 +25,11 @@ public class Runner extends Application {
 	static CreditsMenu creditsmenu;
 	static Image bgMenuImage;
 	HashMap<String, KeyState> keysActive;
+	
+	static int resolutionWidth;
+	static int resolutionHeight;
+	static int bgResolutionWidth;
+	static int bgResolutionHeight;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -33,50 +38,63 @@ public class Runner extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		// set stage
+		resolutionHeight = 900;
+		resolutionWidth = 1600;
+		bgResolutionHeight = 900;
+		bgResolutionWidth = 1600;
+		
+		Pane bgPane = new Pane();
+		Canvas bgCanvas = new Canvas(bgResolutionWidth, bgResolutionHeight);
+		GraphicsContext bgGc = bgCanvas.getGraphicsContext2D();
+		bgPane.getChildren().add(bgCanvas);
+		
 		Pane mainmenuPane = new Pane();
-		Canvas mainmenuCanvas = new Canvas(1600, 900);
+		Canvas mainmenuCanvas = new Canvas(resolutionWidth, resolutionHeight);
 		GraphicsContext mainmenuGc = mainmenuCanvas.getGraphicsContext2D();
 		mainmenuPane.getChildren().add(mainmenuCanvas);
 		
 		Pane playmenuPane = new Pane();
-		Canvas playmenuCanvas = new Canvas(1600, 900);
+		Canvas playmenuCanvas = new Canvas(resolutionWidth, resolutionHeight);
 		GraphicsContext playmenuGc = playmenuCanvas.getGraphicsContext2D();
 		playmenuPane.getChildren().add(playmenuCanvas);
 		
 		Pane shopmenuPane = new Pane();
-		Canvas shopmenuCanvas = new Canvas(1600, 900);
+		Canvas shopmenuCanvas = new Canvas(resolutionWidth, resolutionHeight);
 		GraphicsContext shopmenuGc = shopmenuCanvas.getGraphicsContext2D();
 		shopmenuPane.getChildren().add(shopmenuCanvas);
 		
 		Pane achievementsmenuPane = new Pane();
-		Canvas achievementsmenuCanvas = new Canvas(1600, 900);
+		Canvas achievementsmenuCanvas = new Canvas(resolutionWidth, resolutionHeight);
 		GraphicsContext achievementsmenuGc = achievementsmenuCanvas.getGraphicsContext2D();
 		achievementsmenuPane.getChildren().add(achievementsmenuCanvas);
 		
 		Pane highscoresmenuPane = new Pane();
-		Canvas highscoresmenuCanvas = new Canvas(1600, 900);
+		Canvas highscoresmenuCanvas = new Canvas(resolutionWidth, resolutionHeight);
 		GraphicsContext highscoresmenuGc = highscoresmenuCanvas.getGraphicsContext2D();
 		highscoresmenuPane.getChildren().add(highscoresmenuCanvas);
 		
 		Pane creditsmenuPane = new Pane();
-		Canvas creditsmenuCanvas = new Canvas(1600, 900);
+		Canvas creditsmenuCanvas = new Canvas(resolutionWidth, resolutionHeight);
 		GraphicsContext creditsmenuGc = creditsmenuCanvas.getGraphicsContext2D();
 		creditsmenuPane.getChildren().add(creditsmenuCanvas);
 		
-		Pane rootPane = new Pane(mainmenuPane, playmenuPane, shopmenuPane, achievementsmenuPane, highscoresmenuPane,
+		Pane rootPane = new Pane(bgPane, mainmenuPane, playmenuPane, shopmenuPane, achievementsmenuPane, highscoresmenuPane,
 				creditsmenuPane); // this is for animated transitions to be implemented soon
-		Canvas rootCanvas = new Canvas(1600, 900);
+		Canvas rootCanvas = new Canvas(resolutionWidth, resolutionHeight);
 		GraphicsContext rootGc = rootCanvas.getGraphicsContext2D();
 		rootPane.getChildren().add(rootCanvas);
 		Scene scene = new Scene(rootPane);
 
+		mainmenuPane.setScaleX(0.5);
+		mainmenuPane.setScaleY(0.5);
 		stage.setTitle("Jetpack Joe");
 		stage.setResizable(false);
-		stage.setHeight(927); // scene size is 1600x900
-		stage.setWidth(1606);
+//		stage.setHeight(927); // scene size is 1600x900
+//		stage.setWidth(1606);
 		stage.setScene(scene);
 
 		bgMenuImage = new Image("file:resources\\bg.jpg");
+		bgGc.drawImage(bgMenuImage, 0, 0);
 		keysActive = new HashMap(); // stores pressed keys
 
 		mainmenu = new MainMenu(mainmenuGc);

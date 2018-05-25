@@ -26,7 +26,7 @@ public class MainMenu {
 	public MainMenu(GraphicsContext gc) {
 		this.gc = gc;
 
-		this.bg = Runner.bgMenuImage;
+//		this.bg = Runner.bgMenuImage;
 
 		this.playButton = new Image("file:resources\\play_button.png");
 		this.playButtonPressed = new Image("file:resources\\play_button_pressed.png");
@@ -92,7 +92,7 @@ public class MainMenu {
 	}
 	
 	public void displayMainMenu() {
-		gc.drawImage(bg, 0, 0);
+//		gc.drawImage(bg, 0, 0);
 		gc.drawImage(playButtonSelected, playX, playY);
 		gc.drawImage(shopButton, shopX, shopY);
 		gc.drawImage(achievementsButton, achievementsX, achievementsY);
