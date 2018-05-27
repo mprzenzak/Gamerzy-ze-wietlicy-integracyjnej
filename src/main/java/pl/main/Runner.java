@@ -70,7 +70,6 @@ public class Runner extends Application {
 		// detects user input
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
-			@Override
 			public void handle(KeyEvent key) {
 				String keyData = key.getCode().toString();
 
@@ -82,7 +81,6 @@ public class Runner extends Application {
 
 		scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
 
-			@Override
 			public void handle(KeyEvent key) {
 				String keyData = key.getCode().toString();
 				keysActive.remove(keyData);
