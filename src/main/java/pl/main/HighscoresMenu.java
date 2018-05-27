@@ -18,4 +18,8 @@ public class HighscoresMenu {
 		
 	}
 
+	public GraphicsContext getGc() {
+		return gc;
+	}
+
 }

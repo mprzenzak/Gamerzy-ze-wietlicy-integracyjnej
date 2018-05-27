@@ -74,33 +74,49 @@ public class MainMenu {
 		PLAY, SHOP, ACHIEVEMENTS, HIGHSCORES, OPTIONS, CREDITS, EXIT
 	}
 	
+	public GraphicsContext getGc() {
+		return gc;
+	}
+
 	public void getSelectedSubmenuType() {
 		switch(this.buttonSelected) {
 		case PLAY:
+			gc.drawImage(playButtonPressed, playX, playY);
 			Runner.submenuType = Runner.SubmenuType.PLAY;
 			break;
+			
 		case SHOP:
+			gc.drawImage(shopButtonPressed, shopX, shopY);
 			Runner.submenuType = Runner.SubmenuType.SHOP;
 			break;
+			
 		case ACHIEVEMENTS:
+			gc.drawImage(achievementsButtonPressed, achievementsX, achievementsY);
 			Runner.submenuType = Runner.SubmenuType.ACHIEVEMENTS;
 			break;
+			
 		case HIGHSCORES:
+			gc.drawImage(highscoresButtonPressed, highscoresX, highscoresY);
 			Runner.submenuType = Runner.SubmenuType.HIGHSCORES;
 			break;
+			
 		case OPTIONS:
+			gc.drawImage(optionsButtonPressed, optionsX, optionsY);
 			Runner.submenuType = Runner.SubmenuType.OPTIONS;
 			break;
+			
 		case CREDITS:
+			gc.drawImage(creditsButtonPressed, creditsX, creditsY);
 			Runner.submenuType = Runner.SubmenuType.CREDITS;
 			break;
+			
 		case EXIT:
+			gc.drawImage(exitButtonPressed, exitX, exitY);
 			Runner.menuState = Runner.MenuState.EXIT;
 		}
 	}
 	
 	public void displayMainMenu() {
-//		gc.drawImage(bg, 0, 0);
 		gc.drawImage(playButtonSelected, playX, playY);
 		gc.drawImage(shopButton, shopX, shopY);
 		gc.drawImage(achievementsButton, achievementsX, achievementsY);

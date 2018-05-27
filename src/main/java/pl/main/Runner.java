@@ -33,6 +33,9 @@ public class Runner extends Application {
 	CreditsMenu creditsMenu;
 
 	HashMap<String, KeyState> keysActive;
+	
+	int exitAnimationPosition;
+	int enterAnimationPosition;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -47,6 +50,8 @@ public class Runner extends Application {
 		setMenuBg(rpgc);
 
 		keysActive = new HashMap(); // stores pressed keys
+		exitAnimationPosition = 0;
+		enterAnimationPosition = 1920;
 
 		// main loop
 		new AnimationTimer() {
@@ -54,6 +59,10 @@ public class Runner extends Application {
 			@Override
 			public void handle(long now) {
 				update();
+				
+				if(keysActive.containsKey("ESCAPE")) {
+					exit();
+				} //usun pozniej
 			}
 
 		}.start();
@@ -154,6 +163,7 @@ public class Runner extends Application {
 		return rpgc;
 	}
 
+	
 	private PaneCanvasGcSet setPaneComponents(ScreenAndPaneDimensions dim) {
 		Pane pane = new Pane();
 		Canvas canvas = new Canvas(dim.getPaneWidth(), dim.getPaneHeight());
@@ -163,6 +173,7 @@ public class Runner extends Application {
 		return new PaneCanvasGcSet(pane, canvas, gc);
 	}
 
+	
 	private void scaleCanvas(Canvas canvas, ScreenAndPaneDimensions dim) {
 		canvas.setScaleX(dim.getScreenWidth() / dim.getPaneWidth());
 		canvas.setScaleY(dim.getScreenHeight() / dim.getPaneHeight());
@@ -170,6 +181,7 @@ public class Runner extends Application {
 		canvas.setTranslateY(0 - Math.abs(dim.getScreenHeight() - dim.getPaneHeight()) / 2);
 	}
 
+	
 	private ScreenAndPaneDimensions getDimensions() {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double paneHeight = 1080;
@@ -180,9 +192,10 @@ public class Runner extends Application {
 		return new ScreenAndPaneDimensions(paneHeight, paneWidth, screenHeight, screenWidth);
 	}
 
+	
 	private void update() {
 		switch (menuState) {
-		case PREPAREMAINMENU:
+		case PREPAREMAINMENU: //TODO
 			mainMenu.displayMainMenu();
 			menuState = MenuState.MAINMENU;
 			break;
@@ -190,28 +203,97 @@ public class Runner extends Application {
 		case MAINMENU:
 			userSelectMenuOption();
 			if (userPressed("ENTER")) {
-				menuState = MenuState.PREPARESUBMENU;
 				mainMenu.getSelectedSubmenuType();
+				prepareChosenSubmenu();
+				menuState = MenuState.PREPARESUBMENU;
 			}
 			break;
 
 		case PREPARESUBMENU:
-			prepareChosenSubmenu(); // TODO
-
+			if(exitAnimationPosition >= -1920) {
+				menuExitAnimation(mainMenu.getGc().getCanvas());
+				menuEnterAnimation();
+				enterAnimationPosition -= 20;
+			} else {
+				exitAnimationPosition = 0;
+				enterAnimationPosition = 1920;
+				menuState = MenuState.SUBMENU;
+			}
 			break;
 
-		case SUBMENU:
+		case SUBMENU: //TODO
+			userSelectMenuOption();
+			if (userPressed("ENTER")) {
+				getSelectedOption();
+				menuState = MenuState.PREPAREGAMEPLAY;
+			}
 			break;
 
 		case PREPAREGAMEPLAY:
+			//-----------------------------------------------------------------------------------------------------------TU PRZYGOTOWANIE ROZGRYWKI
 			break;
 
 		case GAMEPLAY:
+			//-----------------------------------------------------------------------------------------------------------TU PETLA SAMEJ ROZGRYWKI
 			break;
 
 		case EXIT:
 			exit();
 		}
+	}
+
+	private void getSelectedOption() { // TODO Auto-generated method stub
+		switch (submenuType) {
+		case PLAY:
+//			playMenu.getSelectedOption();
+			break;
+		case SHOP:
+
+			break;
+		case ACHIEVEMENTS:
+
+			break;
+		case HIGHSCORES:
+
+			break;
+		case OPTIONS:
+
+			break;
+		case CREDITS:
+
+		}		
+	}
+
+	private void menuEnterAnimation() {
+		switch (submenuType) {
+		case MAIN:
+			mainMenu.getGc().getCanvas().setTranslateX(enterAnimationPosition);
+			break;
+		case PLAY:
+			playMenu.getGc().getCanvas().setTranslateX(enterAnimationPosition);
+			break;
+		case SHOP:
+			shopMenu.getGc().getCanvas().setTranslateX(enterAnimationPosition);
+			break;
+		case ACHIEVEMENTS:
+			achievementsMenu.getGc().getCanvas().setTranslateX(enterAnimationPosition);
+			break;
+		case HIGHSCORES:
+			highscoresMenu.getGc().getCanvas().setTranslateX(enterAnimationPosition);
+			break;
+		case OPTIONS:
+			optionsMenu.getGc().getCanvas().setTranslateX(enterAnimationPosition);
+			break;
+		case CREDITS:
+			creditsMenu.getGc().getCanvas().setTranslateX(enterAnimationPosition);
+		}		
+	}
+
+	private void menuExitAnimation(Canvas canvas) {
+			canvas.setTranslateX(exitAnimationPosition);
+			exitAnimationPosition -= 20;
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void exit() {

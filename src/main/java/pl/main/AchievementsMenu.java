@@ -16,7 +16,7 @@ public class AchievementsMenu {
 	}
 	
 	private enum ButtonSelected {
-		
+		BACK, ACHIEVEMENTS_LIST
 	}
 
 	public void displayAchievementsMenu() {
@@ -32,6 +32,10 @@ public class AchievementsMenu {
 	public void selectNextOption() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public GraphicsContext getGc() {
+		return gc;
 	}
 
 }

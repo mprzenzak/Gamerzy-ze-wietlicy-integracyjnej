@@ -18,4 +18,8 @@ public class CreditsMenu {
 		
 	}
 
+	public GraphicsContext getGc() {
+		return gc;
+	}
+
 }

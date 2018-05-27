@@ -4,7 +4,12 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class OptionsMenu {
 
-	public OptionsMenu(GraphicsContext optionsmenuGc) {
+	private GraphicsContext gc;
+	
+	private ButtonSelected buttonSelected;
+	
+	public OptionsMenu(GraphicsContext gc) {
+		this.gc = gc;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -23,4 +28,12 @@ public class OptionsMenu {
 		
 	}
 
+	private enum ButtonSelected {
+		BACK, MUSIC, HACK, CONTROLS_LIST
+	}
+
+	public GraphicsContext getGc() {
+		return gc;
+	}
+	
 }
