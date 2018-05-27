@@ -6,14 +6,12 @@ import javafx.scene.image.Image;
 public class AchievementsMenu {
 	
 	private GraphicsContext gc;
-	private Image bg;
 	
 	private ButtonSelected buttonSelected;
 
 	public AchievementsMenu(GraphicsContext gc) {
 		this.gc = gc;
 
-		this.bg = Runner.bgMenuImage;
 		// TODO Auto-generated constructor stub
 	}
 	

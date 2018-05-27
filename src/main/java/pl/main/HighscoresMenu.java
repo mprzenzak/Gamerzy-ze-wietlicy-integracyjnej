@@ -6,12 +6,10 @@ import javafx.scene.image.Image;
 public class HighscoresMenu {
 
 	private GraphicsContext gc;
-	private Image bg;
 	
 	public HighscoresMenu(GraphicsContext gc) {
 		this.gc = gc;
 
-		this.bg = Runner.bgMenuImage;
 		// TODO Auto-generated constructor stub
 	}
 

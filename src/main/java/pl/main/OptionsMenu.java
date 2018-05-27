@@ -1,25 +1,14 @@
 package pl.main;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 
-public class ShopMenu {
+public class OptionsMenu {
 
-	private GraphicsContext gc;
-	
-	private ButtonSelected buttonSelected;
-	
-	public ShopMenu(GraphicsContext gc) {
-		this.gc = gc;
-
+	public OptionsMenu(GraphicsContext optionsmenuGc) {
 		// TODO Auto-generated constructor stub
 	}
-	
-	private enum ButtonSelected {
-		
-	}
 
-	public void displayShopMenu() {
+	public void displayOptionsMenu() {
 		// TODO Auto-generated method stub
 		
 	}

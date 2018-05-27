@@ -1,5 +1,7 @@
 package pl.main;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.util.HashMap;
 
 import javafx.animation.AnimationTimer;
@@ -9,27 +11,28 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import pl.main.values.PaneCanvasGcSet;
+import pl.main.values.RootPaneAndGcSet;
+import pl.main.values.ScreenAndPaneDimensions;
 
 public class Runner extends Application {
 
 	static MenuState menuState;
 	static SubmenuType submenuType;
-	static MainMenu mainmenu;
-	static PlayMenu playmenu;
-	static ShopMenu shopmenu;
-	static AchievementsMenu achievementsmenu;
-	static HighscoresMenu highscoresmenu;
-	static CreditsMenu creditsmenu;
-	static Image bgMenuImage;
+
+	MainMenu mainMenu;
+	PlayMenu playMenu;
+	ShopMenu shopMenu;
+	AchievementsMenu achievementsMenu;
+	HighscoresMenu highscoresMenu;
+	OptionsMenu optionsMenu;
+	CreditsMenu creditsMenu;
+
 	HashMap<String, KeyState> keysActive;
-	
-	static int resolutionWidth;
-	static int resolutionHeight;
-	static int bgResolutionWidth;
-	static int bgResolutionHeight;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -38,74 +41,12 @@ public class Runner extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		// set stage
-		resolutionHeight = 900;
-		resolutionWidth = 1600;
-		bgResolutionHeight = 900;
-		bgResolutionWidth = 1600;
-		
-		Pane bgPane = new Pane();
-		Canvas bgCanvas = new Canvas(bgResolutionWidth, bgResolutionHeight);
-		GraphicsContext bgGc = bgCanvas.getGraphicsContext2D();
-		bgPane.getChildren().add(bgCanvas);
-		
-		Pane mainmenuPane = new Pane();
-		Canvas mainmenuCanvas = new Canvas(resolutionWidth, resolutionHeight);
-		GraphicsContext mainmenuGc = mainmenuCanvas.getGraphicsContext2D();
-		mainmenuPane.getChildren().add(mainmenuCanvas);
-		
-		Pane playmenuPane = new Pane();
-		Canvas playmenuCanvas = new Canvas(resolutionWidth, resolutionHeight);
-		GraphicsContext playmenuGc = playmenuCanvas.getGraphicsContext2D();
-		playmenuPane.getChildren().add(playmenuCanvas);
-		
-		Pane shopmenuPane = new Pane();
-		Canvas shopmenuCanvas = new Canvas(resolutionWidth, resolutionHeight);
-		GraphicsContext shopmenuGc = shopmenuCanvas.getGraphicsContext2D();
-		shopmenuPane.getChildren().add(shopmenuCanvas);
-		
-		Pane achievementsmenuPane = new Pane();
-		Canvas achievementsmenuCanvas = new Canvas(resolutionWidth, resolutionHeight);
-		GraphicsContext achievementsmenuGc = achievementsmenuCanvas.getGraphicsContext2D();
-		achievementsmenuPane.getChildren().add(achievementsmenuCanvas);
-		
-		Pane highscoresmenuPane = new Pane();
-		Canvas highscoresmenuCanvas = new Canvas(resolutionWidth, resolutionHeight);
-		GraphicsContext highscoresmenuGc = highscoresmenuCanvas.getGraphicsContext2D();
-		highscoresmenuPane.getChildren().add(highscoresmenuCanvas);
-		
-		Pane creditsmenuPane = new Pane();
-		Canvas creditsmenuCanvas = new Canvas(resolutionWidth, resolutionHeight);
-		GraphicsContext creditsmenuGc = creditsmenuCanvas.getGraphicsContext2D();
-		creditsmenuPane.getChildren().add(creditsmenuCanvas);
-		
-		Pane rootPane = new Pane(bgPane, mainmenuPane, playmenuPane, shopmenuPane, achievementsmenuPane, highscoresmenuPane,
-				creditsmenuPane); // this is for animated transitions to be implemented soon
-		Canvas rootCanvas = new Canvas(resolutionWidth, resolutionHeight);
-		GraphicsContext rootGc = rootCanvas.getGraphicsContext2D();
-		rootPane.getChildren().add(rootCanvas);
-		Scene scene = new Scene(rootPane);
+		RootPaneAndGcSet rpgc = setPanes();
+		Scene scene = setStage(stage, rpgc);
+		createMenus(rpgc);
+		setMenuBg(rpgc);
 
-		mainmenuPane.setScaleX(0.5);
-		mainmenuPane.setScaleY(0.5);
-		stage.setTitle("Jetpack Joe");
-		stage.setResizable(false);
-//		stage.setHeight(927); // scene size is 1600x900
-//		stage.setWidth(1606);
-		stage.setScene(scene);
-
-		bgMenuImage = new Image("file:resources\\bg.jpg");
-		bgGc.drawImage(bgMenuImage, 0, 0);
 		keysActive = new HashMap(); // stores pressed keys
-
-		mainmenu = new MainMenu(mainmenuGc);
-		playmenu = new PlayMenu(playmenuGc);
-		shopmenu = new ShopMenu(shopmenuGc);
-		achievementsmenu = new AchievementsMenu(achievementsmenuGc);
-		highscoresmenu = new HighscoresMenu(highscoresmenuGc);
-		creditsmenu = new CreditsMenu(creditsmenuGc);
-
-		menuState = MenuState.PREPAREMAINMENU;
-		submenuType = SubmenuType.MAIN;
 
 		// main loop
 		new AnimationTimer() {
@@ -142,10 +83,107 @@ public class Runner extends Application {
 		stage.show();
 	}
 
+	private void createMenus(RootPaneAndGcSet rpgc) {
+		mainMenu = new MainMenu(rpgc.getMainMenuGc());
+		playMenu = new PlayMenu(rpgc.getPlayMenuGc());
+		shopMenu = new ShopMenu(rpgc.getShopMenuGc());
+		achievementsMenu = new AchievementsMenu(rpgc.getAchievementsMenuGc());
+		highscoresMenu = new HighscoresMenu(rpgc.getHighscoresMenuGc());
+		optionsMenu = new OptionsMenu(rpgc.getOptionsMenuGc());
+		creditsMenu = new CreditsMenu(rpgc.getCreditsMenuGc());
+
+		menuState = MenuState.PREPAREMAINMENU;
+		submenuType = SubmenuType.MAIN;
+
+	}
+
+	private void setMenuBg(RootPaneAndGcSet rpgc) {
+		Image bgMenuImage = new Image("file:resources\\bg.jpg");
+		rpgc.getBgGc().drawImage(bgMenuImage, 0, 0);
+	}
+
+	private Scene setStage(Stage stage, RootPaneAndGcSet rpgc) {
+		stage.setTitle("Jetpack Joe");
+		stage.setFullScreen(true);
+		stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+		Scene scene = new Scene(rpgc.getRootPane());
+		stage.setScene(scene);
+
+		return scene;
+	}
+
+	private RootPaneAndGcSet setPanes() {
+		ScreenAndPaneDimensions dimensions = getDimensions();
+
+		PaneCanvasGcSet pcgBg = setPaneComponents(dimensions);
+		scaleCanvas(pcgBg.getCanvas(), dimensions);
+
+		PaneCanvasGcSet pcgMainMenu = setPaneComponents(dimensions);
+		scaleCanvas(pcgMainMenu.getCanvas(), dimensions);
+
+		PaneCanvasGcSet pcgPlayMenu = setPaneComponents(dimensions);
+		scaleCanvas(pcgPlayMenu.getCanvas(), dimensions);
+
+		PaneCanvasGcSet pcgShopMenu = setPaneComponents(dimensions);
+		scaleCanvas(pcgShopMenu.getCanvas(), dimensions);
+
+		PaneCanvasGcSet pcgAchievementsMenu = setPaneComponents(dimensions);
+		scaleCanvas(pcgAchievementsMenu.getCanvas(), dimensions);
+
+		PaneCanvasGcSet pcgHighscoresMenu = setPaneComponents(dimensions);
+		scaleCanvas(pcgHighscoresMenu.getCanvas(), dimensions);
+
+		PaneCanvasGcSet pcgOptionsMenu = setPaneComponents(dimensions);
+		scaleCanvas(pcgOptionsMenu.getCanvas(), dimensions);
+
+		PaneCanvasGcSet pcgCreditsMenu = setPaneComponents(dimensions);
+		scaleCanvas(pcgCreditsMenu.getCanvas(), dimensions);
+
+		Pane rootPane = new Pane(pcgBg.getPane(), pcgMainMenu.getPane(), pcgPlayMenu.getPane(), pcgShopMenu.getPane(),
+				pcgAchievementsMenu.getPane(), pcgHighscoresMenu.getPane(), pcgOptionsMenu.getPane(),
+				pcgCreditsMenu.getPane()); // this is for animated transitions to be implemented soon
+		Canvas rootCanvas = new Canvas(dimensions.getPaneWidth(), dimensions.getPaneHeight());
+		GraphicsContext rootGc = rootCanvas.getGraphicsContext2D();
+		rootPane.getChildren().add(rootCanvas);
+		scaleCanvas(rootCanvas, dimensions);
+
+		RootPaneAndGcSet rpgc = new RootPaneAndGcSet(rootPane, pcgBg.getGc(), pcgMainMenu.getGc(), pcgPlayMenu.getGc(),
+				pcgShopMenu.getGc(), pcgAchievementsMenu.getGc(), pcgHighscoresMenu.getGc(), pcgOptionsMenu.getGc(),
+				pcgCreditsMenu.getGc(), rootGc);
+
+		return rpgc;
+	}
+
+	private PaneCanvasGcSet setPaneComponents(ScreenAndPaneDimensions dim) {
+		Pane pane = new Pane();
+		Canvas canvas = new Canvas(dim.getPaneWidth(), dim.getPaneHeight());
+		GraphicsContext gc = canvas.getGraphicsContext2D();
+		pane.getChildren().add(canvas);
+
+		return new PaneCanvasGcSet(pane, canvas, gc);
+	}
+
+	private void scaleCanvas(Canvas canvas, ScreenAndPaneDimensions dim) {
+		canvas.setScaleX(dim.getScreenWidth() / dim.getPaneWidth());
+		canvas.setScaleY(dim.getScreenHeight() / dim.getPaneHeight());
+		canvas.setTranslateX(0 - Math.abs(dim.getScreenWidth() - dim.getPaneWidth()) / 2);
+		canvas.setTranslateY(0 - Math.abs(dim.getScreenHeight() - dim.getPaneHeight()) / 2);
+	}
+
+	private ScreenAndPaneDimensions getDimensions() {
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double paneHeight = 1080;
+		double paneWidth = 1920;
+		double screenHeight = screenSize.getHeight();
+		double screenWidth = screenSize.getWidth();
+
+		return new ScreenAndPaneDimensions(paneHeight, paneWidth, screenHeight, screenWidth);
+	}
+
 	private void update() {
 		switch (menuState) {
 		case PREPAREMAINMENU:
-			mainmenu.displayMainMenu();
+			mainMenu.displayMainMenu();
 			menuState = MenuState.MAINMENU;
 			break;
 
@@ -153,50 +191,52 @@ public class Runner extends Application {
 			userSelectMenuOption();
 			if (userPressed("ENTER")) {
 				menuState = MenuState.PREPARESUBMENU;
-				mainmenu.getSelectedSubmenuType();
+				mainMenu.getSelectedSubmenuType();
 			}
 			break;
 
 		case PREPARESUBMENU:
 			prepareChosenSubmenu(); // TODO
-			
+
 			break;
-			
+
 		case SUBMENU:
 			break;
-		
+
 		case PREPAREGAMEPLAY:
 			break;
-			
+
 		case GAMEPLAY:
 			break;
-		
+
 		case EXIT:
 			exit();
 		}
 	}
 
 	private void exit() {
-		// TODO Auto-generated method stub
-		
+		System.exit(0); // clean up before!
 	}
 
 	private void prepareChosenSubmenu() {
 		switch (submenuType) {
 		case PLAY:
-			playmenu.displayPlayMenu();
+			playMenu.displayPlayMenu();
 			break;
 		case SHOP:
-			shopmenu.displayShopMenu();
+			shopMenu.displayShopMenu();
 			break;
 		case ACHIEVEMENTS:
-			achievementsmenu.displayAchievementsMenu();
+			achievementsMenu.displayAchievementsMenu();
 			break;
 		case HIGHSCORES:
-			highscoresmenu.displayHighscoresMenu();
+			highscoresMenu.displayHighscoresMenu();
+			break;
+		case OPTIONS:
+			optionsMenu.displayOptionsMenu();
 			break;
 		case CREDITS:
-			creditsmenu.displayCreditsMenu();
+			creditsMenu.displayCreditsMenu();
 		}
 	}
 
@@ -209,6 +249,7 @@ public class Runner extends Application {
 		}
 		return false;
 	}
+	
 
 	private void userSelectMenuOption() {
 		if (userPressed("W") || userPressed("UP")) {
@@ -222,32 +263,38 @@ public class Runner extends Application {
 	private void selectPreviousMenuOption() {
 		switch (submenuType) {
 		case MAIN:
-			mainmenu.selectPreviousOption();
+			mainMenu.selectPreviousOption();
 			break;
 		case PLAY:
-			playmenu.selectPreviousOption();
+			playMenu.selectPreviousOption();
 			break;
 		case SHOP:
-			shopmenu.selectPreviousOption();
+			shopMenu.selectPreviousOption();
 			break;
 		case ACHIEVEMENTS:
-			achievementsmenu.selectPreviousOption();
+			achievementsMenu.selectPreviousOption();
+			break;
+		case OPTIONS:
+			optionsMenu.selectPreviousOption();
 		}
 	}
 
 	private void selectNextMenuOption() {
 		switch (submenuType) {
 		case MAIN:
-			mainmenu.selectNextOption();
+			mainMenu.selectNextOption();
 			break;
 		case PLAY:
-			playmenu.selectNextOption();
+			playMenu.selectNextOption();
 			break;
 		case SHOP:
-			shopmenu.selectNextOption();
+			shopMenu.selectNextOption();
 			break;
 		case ACHIEVEMENTS:
-			achievementsmenu.selectNextOption();
+			achievementsMenu.selectNextOption();
+			break;
+		case OPTIONS:
+			optionsMenu.selectNextOption();
 		}
 
 	}
@@ -259,9 +306,10 @@ public class Runner extends Application {
 	public enum MenuState {
 		PREPAREMAINMENU, MAINMENU, PREPARESUBMENU, SUBMENU, PREPAREGAMEPLAY, GAMEPLAY, EXIT
 	}
+	
 
 	public enum SubmenuType {
-		MAIN, PLAY, SHOP, ACHIEVEMENTS, HIGHSCORES, CREDITS
+		MAIN, PLAY, SHOP, ACHIEVEMENTS, HIGHSCORES, OPTIONS, CREDITS
 	}
 
 }
