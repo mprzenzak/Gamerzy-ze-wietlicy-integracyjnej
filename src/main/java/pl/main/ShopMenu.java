@@ -6,14 +6,21 @@ import javafx.scene.image.Image;
 public class ShopMenu {
 
 	private GraphicsContext gc;
-	private Image back;
+	private Image backButton, backButtonSelected, backButtonPressed;
 	private Image shopBox, shopBox_oneSelected, shopBox_twoSelected, shopBox_threeSelected, shopBox_fourSelected; //and so on, depends on the design
+	
+	private int backX, backY;
 	
 	private ButtonSelected buttonSelected;
 	
 	public ShopMenu(GraphicsContext gc) {
 		this.gc = gc;
-
+		
+		this.backButton = new Image("file:resources\\backButton.png");
+		this.backButtonSelected = new Image("file:resources\\backButtonSelected.png");
+		this.backButtonPressed = new Image("file:resources\\backButtonPressed.png");
+		this.backX = 15;
+		this.backY = 15;
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -38,6 +45,11 @@ public class ShopMenu {
 
 	public GraphicsContext getGc() {
 		return gc;
+	}
+
+	public void getSelectedOption() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
