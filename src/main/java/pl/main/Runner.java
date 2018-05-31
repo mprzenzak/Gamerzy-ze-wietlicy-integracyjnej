@@ -14,6 +14,8 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import pl.main.values.PaneCanvasGcSet;
 import pl.main.values.RootPaneAndGcSet;
@@ -24,7 +26,6 @@ public class Runner extends Application {
 	static MenuState menuState;
 	static SubmenuType submenuType;
 	SubmenuType previousSubmenuType;
-
 
 	MainMenu mainMenu;
 	PlayMenu playMenu;
@@ -39,6 +40,8 @@ public class Runner extends Application {
 	boolean hasGameJustStarted;
 	int exitAnimationPosition;
 	int enterAnimationPosition;
+	GraphicsContext moneyGc;
+	int money;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -56,7 +59,7 @@ public class Runner extends Application {
 		exitAnimationPosition = 0;
 		enterAnimationPosition = 1920;
 		hasGameJustStarted = true;
-		
+		money = 0; //
 		// main loop
 		new AnimationTimer() {
 
@@ -102,6 +105,7 @@ public class Runner extends Application {
 		highscoresMenu = new HighscoresMenu(rpgc.getHighscoresMenuGc());
 		optionsMenu = new OptionsMenu(rpgc.getOptionsMenuGc());
 		creditsMenu = new CreditsMenu(rpgc.getCreditsMenuGc());
+		moneyGc = rpgc.getMoneyGc();
 
 		menuState = MenuState.PREPAREMENU;
 		submenuType = SubmenuType.MAIN;
@@ -109,8 +113,12 @@ public class Runner extends Application {
 	}
 
 	private void setMenuBg(RootPaneAndGcSet rpgc) {
+		
 		Image bgMenuImage = new Image("file:resources\\bg.jpg");
 		rpgc.getBgGc().drawImage(bgMenuImage, 0, 0);
+		
+		Image coin = new Image("file:resources\\coin.png");
+		moneyGc.drawImage(coin, 1700, 15);
 	}
 
 	private Scene setStage(Stage stage, RootPaneAndGcSet rpgc) {
@@ -128,6 +136,9 @@ public class Runner extends Application {
 
 		PaneCanvasGcSet pcgBg = setPaneComponents(dimensions);
 		scaleCanvas(pcgBg.getCanvas(), dimensions);
+		
+		PaneCanvasGcSet pcgMoney = setPaneComponents(dimensions);
+		scaleCanvas(pcgMoney.getCanvas(), dimensions);
 
 		PaneCanvasGcSet pcgMainMenu = setPaneComponents(dimensions);
 		scaleCanvas(pcgMainMenu.getCanvas(), dimensions);
@@ -150,7 +161,7 @@ public class Runner extends Application {
 		PaneCanvasGcSet pcgCreditsMenu = setPaneComponents(dimensions);
 		scaleCanvas(pcgCreditsMenu.getCanvas(), dimensions);
 
-		Pane rootPane = new Pane(pcgBg.getPane(), pcgMainMenu.getPane(), pcgPlayMenu.getPane(), pcgShopMenu.getPane(),
+		Pane rootPane = new Pane(pcgBg.getPane(), pcgMoney.getPane(), pcgMainMenu.getPane(), pcgPlayMenu.getPane(), pcgShopMenu.getPane(),
 				pcgAchievementsMenu.getPane(), pcgHighscoresMenu.getPane(), pcgOptionsMenu.getPane(),
 				pcgCreditsMenu.getPane()); // this is for animated transitions to be implemented soon
 		Canvas rootCanvas = new Canvas(dimensions.getPaneWidth(), dimensions.getPaneHeight());
@@ -158,7 +169,7 @@ public class Runner extends Application {
 		rootPane.getChildren().add(rootCanvas);
 		scaleCanvas(rootCanvas, dimensions);
 
-		RootPaneAndGcSet rpgc = new RootPaneAndGcSet(rootPane, pcgBg.getGc(), pcgMainMenu.getGc(), pcgPlayMenu.getGc(),
+		RootPaneAndGcSet rpgc = new RootPaneAndGcSet(rootPane, pcgBg.getGc(), pcgMoney.getGc(), pcgMainMenu.getGc(), pcgPlayMenu.getGc(),
 				pcgShopMenu.getGc(), pcgAchievementsMenu.getGc(), pcgHighscoresMenu.getGc(), pcgOptionsMenu.getGc(),
 				pcgCreditsMenu.getGc(), rootGc);
 
@@ -197,6 +208,7 @@ public class Runner extends Application {
 		switch (menuState) {
 		case PREPAREMENU:
 			hasGameJustStarted = mainMenu.displayMainMenu(hasGameJustStarted);
+			updateMoneyCounter();
 			menuState = MenuState.SUBMENU;
 			break;
 		
@@ -239,6 +251,18 @@ public class Runner extends Application {
 		case EXIT:
 			exit();
 		}
+	}
+
+	private void updateMoneyCounter() { 
+		moneyGc.clearRect(1760, 0, 200, 200);
+		moneyGc.setFill(Color.WHITE);
+		moneyGc.setFont(Font.font("Consolas", 45));
+		
+		String moneyString = Integer.toString(money);
+		while (moneyString.length() < 5) {
+			moneyString = "0" + moneyString;
+		}
+		moneyGc.fillText(moneyString, 1760, 55);		
 	}
 
 	private void getSelectedOption() { 

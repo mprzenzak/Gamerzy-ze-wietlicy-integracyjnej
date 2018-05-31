@@ -7,6 +7,7 @@ public class RootPaneAndGcSet {
 
 	private Pane rootPane;
 	private GraphicsContext bgGc;
+	private GraphicsContext moneyGc;
 	private GraphicsContext mainMenuGc;
 	private GraphicsContext playMenuGc;
 	private GraphicsContext shopMenuGc;
@@ -16,11 +17,12 @@ public class RootPaneAndGcSet {
 	private GraphicsContext creditsMenuGc; 
 	private GraphicsContext rootGc;
 	
-	public RootPaneAndGcSet(Pane rootPane, GraphicsContext bgGc, GraphicsContext mainMenuGc, GraphicsContext playMenuGc,
+	public RootPaneAndGcSet(Pane rootPane, GraphicsContext bgGc, GraphicsContext moneyGc, GraphicsContext mainMenuGc, GraphicsContext playMenuGc,
 			GraphicsContext shopMenuGc, GraphicsContext achievementsMenuGc, GraphicsContext highscoresMenuGc,
 			GraphicsContext optionsMenuGc, GraphicsContext creditsMenuGc, GraphicsContext rootGc) {
 		this.rootPane = rootPane;
 		this.bgGc = bgGc;
+		this.moneyGc = moneyGc;
 		this.mainMenuGc = mainMenuGc;
 		this.playMenuGc = playMenuGc;
 		this.shopMenuGc = shopMenuGc;
@@ -37,6 +39,10 @@ public class RootPaneAndGcSet {
 
 	public GraphicsContext getBgGc() {
 		return bgGc;
+	}
+	
+	public GraphicsContext getMoneyGc() {
+		return moneyGc;
 	}
 
 	public GraphicsContext getMainMenuGc() {
