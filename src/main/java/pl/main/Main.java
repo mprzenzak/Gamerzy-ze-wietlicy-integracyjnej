@@ -35,7 +35,8 @@ public class Main extends Application {
 		levelWidth = LevelData.LEVEL1[0].length();
 
 		for (int i = 0; i < LevelData.LEVEL1.length; i++) {
-			String map = LevelData.LEVEL1[i] + LevelData.LEVEL2[i]+ LevelData.LEVEL1[i]+ LevelData.LEVEL2[i]+ LevelData.LEVEL1[i]+ LevelData.LEVEL2[i];
+			String map = LevelData.LEVEL1[i] + LevelData.LEVEL2[i] + LevelData.LEVEL1[i] + LevelData.LEVEL2[i]
+					+ LevelData.LEVEL1[i] + LevelData.LEVEL2[i];
 
 			String line = map;
 			for (int j = 0; j < line.length(); j++) {
@@ -53,9 +54,9 @@ public class Main extends Application {
 		// a ????????????
 		player.translateXProperty().addListener((a, old, newValue) -> {
 			int offset = newValue.intValue();
-			//if (offset > 360 && offset < levelWidth - 360) {
-				gameRoot.setLayoutX(-(offset - 360));
-			//}
+			// if (offset > 360 && offset < levelWidth - 360) {
+			gameRoot.setLayoutX(-(offset - 360));
+			// }
 		});
 		appRoot.getChildren().addAll(background, gameRoot, uiRoot);
 	}
@@ -69,7 +70,7 @@ public class Main extends Application {
 		}
 		movePlayerY((int) playerGoDown.getY());
 
-		if (player.getTranslateX() <= levelWidth - 5) {
+		if (player.getTranslateX() <= levelWidth) {
 			// movePlayerX(5);
 			movePlayerRight();
 		}
