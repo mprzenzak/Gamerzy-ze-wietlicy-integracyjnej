@@ -2,6 +2,10 @@ package pl.main;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 public class MainMenu {
 
@@ -13,6 +17,7 @@ public class MainMenu {
 	private Image optionsButton, optionsButtonPressed, optionsButtonSelected;
 	private Image creditsButton, creditsButtonPressed, creditsButtonSelected;
 	private Image exitButton, exitButtonPressed, exitButtonSelected;
+	private Image button, button_selected, button_pressed;
 
 	private int playX, playY;
 	private int shopX, shopY;
@@ -21,6 +26,8 @@ public class MainMenu {
 	private int optionsX, optionsY;
 	private int creditsX, creditsY;
 	private int exitX, exitY;
+	
+	private int buttonWidth, buttonHeight;
 
 	private ButtonSelected buttonSelected;
 
@@ -68,6 +75,12 @@ public class MainMenu {
 		this.exitButtonSelected = new Image("file:resources\\exit_button_selected.png");
 		this.exitX = 1920/2-200/2;
 		this.exitY = 1080-65;
+		
+		this.button = new Image("file:resources\\button.png");
+		this.button_selected = new Image("file:resources\\buttonSelected.png");
+		this.button_pressed = new Image("file:resources\\buttonPressed.png");
+		this.buttonWidth = 200;
+		this.buttonHeight = 50;
 	}
 
 	private enum ButtonSelected {
@@ -133,11 +146,26 @@ public class MainMenu {
 		gc.drawImage(highscoresButton, highscoresX, highscoresY);
 		gc.drawImage(optionsButton, optionsX, optionsY);
 		gc.drawImage(creditsButton, creditsX, creditsY);
-		gc.drawImage(exitButton, exitX, exitY);
+		//gc.drawImage(exitButton, exitX, exitY);
+		drawButton(button, "LOLOLOLOLOLOLOLOLOLLOLOOLOL", exitX, exitY, buttonHeight, buttonWidth);
 
 		this.buttonSelected = ButtonSelected.PLAY;
 		
 		return false;
+	}
+
+	private void drawButton(Image img, String string, int x, int y, int buttonH, int buttonW) { //TODO FIGURE THIS OUT
+		gc.drawImage(img, x, y);
+		
+		Text text = new Text(string);
+		double textH = text.getLayoutBounds().getHeight();
+		double textW = text.getLayoutBounds().getWidth();
+		
+		gc.setFill(Color.WHITE);
+		gc.setFont(Font.font("Consolas", 20));
+		gc.fillText(string, x + buttonW/2 - textW/2, y + buttonH/2 + textH/2);
+		// TODO Auto-generated method stub
+		
 	}
 
 	public void selectNextOption() {
