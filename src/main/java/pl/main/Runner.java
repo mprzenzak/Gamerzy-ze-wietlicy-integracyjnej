@@ -227,6 +227,8 @@ public class Runner extends Application {
 			break;
 
 		case PREPAREGAMEPLAY:
+//			playMenu.getMode();
+//			playMenu.getNumberOfPlayers();
 			//-----------------------------------------------------------------------------------------------------------TU PRZYGOTOWANIE ROZGRYWKI
 			break;
 
@@ -449,7 +451,7 @@ public class Runner extends Application {
 	}
 
 	public enum MenuState {
-		PREPAREMENU, MENU_ENTERANIMATION, PREPARESUBMENU, SUBMENU, PREPAREGAMEPLAY, GAMEPLAY, EXIT
+		PREPAREMENU, MENU_ENTERANIMATION, PREPARESUBMENU, SUBMENU, PREPAREGAMEPLAY, GAMEPLAY, PREPAREPAUSE, PAUSE, PLAYERDIED, NEWHIGHSCORE, GAMEOVER, EXIT
 	}
 	
 	public enum SubmenuType {

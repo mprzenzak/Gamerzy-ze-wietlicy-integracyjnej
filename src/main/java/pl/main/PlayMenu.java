@@ -288,4 +288,12 @@ public class PlayMenu {
 		}		
 	}
 
+	public PlayersNumberPressed getNumberOfPlayers() {
+		return playersNumberPressed;
+	}
+
+	public ModePressed getMode() {
+		return modePressed;
+	}
+
 }
