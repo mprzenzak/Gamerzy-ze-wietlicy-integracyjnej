@@ -38,4 +38,9 @@ public class AchievementsMenu {
 		return gc;
 	}
 
+	public void getSelectedOption() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -22,4 +22,9 @@ public class HighscoresMenu {
 		return gc;
 	}
 
+	public void getSelectedOption() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

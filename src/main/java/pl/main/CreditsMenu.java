@@ -22,4 +22,9 @@ public class CreditsMenu {
 		return gc;
 	}
 
+	public void getSelectedOption() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

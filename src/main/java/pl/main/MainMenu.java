@@ -78,36 +78,42 @@ public class MainMenu {
 		return gc;
 	}
 
-	public void getSelectedSubmenuType() {
+	public void getSelectedOption() {
 		switch(this.buttonSelected) {
 		case PLAY:
 			gc.drawImage(playButtonPressed, playX, playY);
 			Runner.submenuType = Runner.SubmenuType.PLAY;
+			Runner.menuState = Runner.MenuState.PREPARESUBMENU;
 			break;
 			
 		case SHOP:
 			gc.drawImage(shopButtonPressed, shopX, shopY);
 			Runner.submenuType = Runner.SubmenuType.SHOP;
+			Runner.menuState = Runner.MenuState.PREPARESUBMENU;
 			break;
 			
 		case ACHIEVEMENTS:
 			gc.drawImage(achievementsButtonPressed, achievementsX, achievementsY);
 			Runner.submenuType = Runner.SubmenuType.ACHIEVEMENTS;
+			Runner.menuState = Runner.MenuState.PREPARESUBMENU;
 			break;
 			
 		case HIGHSCORES:
 			gc.drawImage(highscoresButtonPressed, highscoresX, highscoresY);
 			Runner.submenuType = Runner.SubmenuType.HIGHSCORES;
+			Runner.menuState = Runner.MenuState.PREPARESUBMENU;
 			break;
 			
 		case OPTIONS:
 			gc.drawImage(optionsButtonPressed, optionsX, optionsY);
 			Runner.submenuType = Runner.SubmenuType.OPTIONS;
+			Runner.menuState = Runner.MenuState.PREPARESUBMENU;
 			break;
 			
 		case CREDITS:
 			gc.drawImage(creditsButtonPressed, creditsX, creditsY);
 			Runner.submenuType = Runner.SubmenuType.CREDITS;
+			Runner.menuState = Runner.MenuState.PREPARESUBMENU;
 			break;
 			
 		case EXIT:
@@ -116,7 +122,11 @@ public class MainMenu {
 		}
 	}
 	
-	public void displayMainMenu() {
+	public boolean displayMainMenu(boolean gameJustStarted) {
+		if(!gameJustStarted) {
+			gc.getCanvas().setTranslateX(1920);
+		}
+		
 		gc.drawImage(playButtonSelected, playX, playY);
 		gc.drawImage(shopButton, shopX, shopY);
 		gc.drawImage(achievementsButton, achievementsX, achievementsY);
@@ -126,6 +136,8 @@ public class MainMenu {
 		gc.drawImage(exitButton, exitX, exitY);
 
 		this.buttonSelected = ButtonSelected.PLAY;
+		
+		return false;
 	}
 
 	public void selectNextOption() {

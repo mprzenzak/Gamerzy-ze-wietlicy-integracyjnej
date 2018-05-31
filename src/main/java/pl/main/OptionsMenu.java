@@ -35,5 +35,20 @@ public class OptionsMenu {
 	public GraphicsContext getGc() {
 		return gc;
 	}
+
+	public void selectLeftOption() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void selectRightOption() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void getSelectedOption() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

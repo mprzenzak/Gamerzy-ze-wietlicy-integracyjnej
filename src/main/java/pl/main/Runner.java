@@ -23,6 +23,8 @@ public class Runner extends Application {
 
 	static MenuState menuState;
 	static SubmenuType submenuType;
+	SubmenuType previousSubmenuType;
+
 
 	MainMenu mainMenu;
 	PlayMenu playMenu;
@@ -34,6 +36,7 @@ public class Runner extends Application {
 
 	HashMap<String, KeyState> keysActive;
 	
+	boolean hasGameJustStarted;
 	int exitAnimationPosition;
 	int enterAnimationPosition;
 
@@ -49,10 +52,11 @@ public class Runner extends Application {
 		createMenus(rpgc);
 		setMenuBg(rpgc);
 
-		keysActive = new HashMap(); // stores pressed keys
+		keysActive = new HashMap<>(); // stores pressed keys
 		exitAnimationPosition = 0;
 		enterAnimationPosition = 1920;
-
+		hasGameJustStarted = true;
+		
 		// main loop
 		new AnimationTimer() {
 
@@ -99,7 +103,7 @@ public class Runner extends Application {
 		optionsMenu = new OptionsMenu(rpgc.getOptionsMenuGc());
 		creditsMenu = new CreditsMenu(rpgc.getCreditsMenuGc());
 
-		menuState = MenuState.PREPAREMAINMENU;
+		menuState = MenuState.PREPAREMENU;
 		submenuType = SubmenuType.MAIN;
 
 	}
@@ -160,7 +164,6 @@ public class Runner extends Application {
 
 		return rpgc;
 	}
-
 	
 	private PaneCanvasGcSet setPaneComponents(ScreenAndPaneDimensions dim) {
 		Pane pane = new Pane();
@@ -170,7 +173,6 @@ public class Runner extends Application {
 
 		return new PaneCanvasGcSet(pane, canvas, gc);
 	}
-
 	
 	private void scaleCanvas(Canvas canvas, ScreenAndPaneDimensions dim) {
 		canvas.setScaleX(dim.getScreenWidth() / dim.getPaneWidth());
@@ -178,7 +180,6 @@ public class Runner extends Application {
 		canvas.setTranslateX(0 - Math.abs(dim.getScreenWidth() - dim.getPaneWidth()) / 2);
 		canvas.setTranslateY(0 - Math.abs(dim.getScreenHeight() - dim.getPaneHeight()) / 2);
 	}
-
 	
 	private ScreenAndPaneDimensions getDimensions() {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -191,27 +192,23 @@ public class Runner extends Application {
 	}
 
 	
-	private void update() {
+	private void update() { // TODO Auto-generated method stub
+		
 		switch (menuState) {
-		case PREPAREMAINMENU: //TODO
-			mainMenu.displayMainMenu();
-			menuState = MenuState.MAINMENU;
+		case PREPAREMENU:
+			hasGameJustStarted = mainMenu.displayMainMenu(hasGameJustStarted);
+			menuState = MenuState.SUBMENU;
 			break;
-
-		case MAINMENU:
-			userSelectMenuOption();
-			if (userPressed("ENTER")) {
-				mainMenu.getSelectedSubmenuType();
-				prepareChosenSubmenu();
-				menuState = MenuState.PREPARESUBMENU;
-			}
-			break;
-
+		
 		case PREPARESUBMENU:
+			displayChosenSubmenu();
+			menuState = MenuState.MENU_ENTERANIMATION;
+			break;
+			
+		case MENU_ENTERANIMATION:
 			if(exitAnimationPosition >= -1920) {
-				menuExitAnimation(mainMenu.getGc().getCanvas());
+				menuExitAnimation();
 				menuEnterAnimation();
-				enterAnimationPosition -= 20;
 			} else {
 				exitAnimationPosition = 0;
 				enterAnimationPosition = 1920;
@@ -219,11 +216,13 @@ public class Runner extends Application {
 			}
 			break;
 
-		case SUBMENU: //TODO
+		case SUBMENU:
 			userSelectMenuOption();
+			userSelectParallelMenuOption();
+			
 			if (userPressed("ENTER")) {
+				previousSubmenuType = submenuType;
 				getSelectedOption();
-				menuState = MenuState.PREPAREGAMEPLAY;
 			}
 			break;
 
@@ -240,25 +239,28 @@ public class Runner extends Application {
 		}
 	}
 
-	private void getSelectedOption() { // TODO Auto-generated method stub
+	private void getSelectedOption() { 
 		switch (submenuType) {
+		case MAIN:
+			mainMenu.getSelectedOption();
+			break;
 		case PLAY:
-//			playMenu.getSelectedOption();
+			playMenu.getSelectedOption();
 			break;
 		case SHOP:
-
+			shopMenu.getSelectedOption();
 			break;
 		case ACHIEVEMENTS:
-
+			achievementsMenu.getSelectedOption();
 			break;
 		case HIGHSCORES:
-
+			highscoresMenu.getSelectedOption();
 			break;
 		case OPTIONS:
-
+			optionsMenu.getSelectedOption();
 			break;
 		case CREDITS:
-
+			creditsMenu.getSelectedOption();
 		}		
 	}
 
@@ -285,21 +287,52 @@ public class Runner extends Application {
 		case CREDITS:
 			creditsMenu.getGc().getCanvas().setTranslateX(enterAnimationPosition);
 		}		
+		enterAnimationPosition -= 25;
 	}
 
-	private void menuExitAnimation(Canvas canvas) {
-			canvas.setTranslateX(exitAnimationPosition);
-			exitAnimationPosition -= 20;
-		// TODO Auto-generated method stub
-		
+	private void menuExitAnimation() {
+			
+			switch (previousSubmenuType) {
+			case MAIN:
+				mainMenu.getGc().getCanvas().setTranslateX(exitAnimationPosition);
+				break;
+				
+			case PLAY:
+				playMenu.getGc().getCanvas().setTranslateX(exitAnimationPosition);
+				break;
+				
+			case SHOP:
+				shopMenu.getGc().getCanvas().setTranslateX(exitAnimationPosition);
+				break;
+				
+			case ACHIEVEMENTS:
+				achievementsMenu.getGc().getCanvas().setTranslateX(exitAnimationPosition);
+				break;
+				
+			case HIGHSCORES:
+				highscoresMenu.getGc().getCanvas().setTranslateX(exitAnimationPosition);
+				break;
+				
+			case OPTIONS:
+				optionsMenu.getGc().getCanvas().setTranslateX(exitAnimationPosition);
+				break;
+				
+			case CREDITS:
+				creditsMenu.getGc().getCanvas().setTranslateX(exitAnimationPosition);
+			}
+			
+			exitAnimationPosition -= 25;
 	}
 
-	private void exit() {
+	private void exit() { // TODO Auto-generated method stub
 		System.exit(0); // clean up before!
 	}
 
-	private void prepareChosenSubmenu() {
+	private void displayChosenSubmenu() {
 		switch (submenuType) {
+		case MAIN:
+			mainMenu.displayMainMenu(hasGameJustStarted);
+			break;
 		case PLAY:
 			playMenu.displayPlayMenu();
 			break;
@@ -330,7 +363,6 @@ public class Runner extends Application {
 		return false;
 	}
 	
-
 	private void userSelectMenuOption() {
 		if (userPressed("W") || userPressed("UP")) {
 			selectPreviousMenuOption();
@@ -339,7 +371,39 @@ public class Runner extends Application {
 			selectNextMenuOption();
 		}
 	}
+	
+	private void userSelectParallelMenuOption() {
+		if (userPressed("D") || userPressed("RIGHT")) {
+			selectRightMenuOption();
+		}
+		if (userPressed("A") || userPressed("LEFT")) {
+			selectLeftMenuOption();
+		}
+	}
 
+	@SuppressWarnings("incomplete-switch")
+	private void selectLeftMenuOption() {
+		switch (submenuType) {
+		case PLAY:
+			playMenu.selectLeftOption();
+			break;
+		case OPTIONS:
+			optionsMenu.selectLeftOption();
+		}		
+	}
+
+	@SuppressWarnings("incomplete-switch")
+	private void selectRightMenuOption() {
+		switch (submenuType) {
+		case PLAY:
+			playMenu.selectRightOption();
+			break;
+		case OPTIONS:
+			optionsMenu.selectRightOption();
+		}		
+	}
+
+	@SuppressWarnings("incomplete-switch")
 	private void selectPreviousMenuOption() {
 		switch (submenuType) {
 		case MAIN:
@@ -359,6 +423,7 @@ public class Runner extends Application {
 		}
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	private void selectNextMenuOption() {
 		switch (submenuType) {
 		case MAIN:
@@ -384,10 +449,9 @@ public class Runner extends Application {
 	}
 
 	public enum MenuState {
-		PREPAREMAINMENU, MAINMENU, PREPARESUBMENU, SUBMENU, PREPAREGAMEPLAY, GAMEPLAY, EXIT
+		PREPAREMENU, MENU_ENTERANIMATION, PREPARESUBMENU, SUBMENU, PREPAREGAMEPLAY, GAMEPLAY, EXIT
 	}
 	
-
 	public enum SubmenuType {
 		MAIN, PLAY, SHOP, ACHIEVEMENTS, HIGHSCORES, OPTIONS, CREDITS
 	}
