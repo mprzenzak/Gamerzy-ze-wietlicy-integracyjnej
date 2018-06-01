@@ -10,15 +10,10 @@ import javafx.scene.text.TextAlignment;
 public class MainMenu {
 
 	private GraphicsContext gc;
-	private Image playButton, playButtonPressed, playButtonSelected;
-	private Image shopButton, shopButtonPressed, shopButtonSelected;
-	private Image achievementsButton, achievementsButtonPressed, achievementsButtonSelected;
-	private Image highscoresButton, highscoresButtonPressed, highscoresButtonSelected;
-	private Image optionsButton, optionsButtonPressed, optionsButtonSelected;
-	private Image creditsButton, creditsButtonPressed, creditsButtonSelected;
-	private Image exitButton, exitButtonPressed, exitButtonSelected;
+	
 	private Image button, button_selected, button_pressed;
-
+	private int buttonWidth, buttonHeight;
+	
 	private int playX, playY;
 	private int shopX, shopY;
 	private int achievementsX, achievementsY;
@@ -27,52 +22,29 @@ public class MainMenu {
 	private int creditsX, creditsY;
 	private int exitX, exitY;
 	
-	private int buttonWidth, buttonHeight;
-
 	private ButtonSelected buttonSelected;
 
 	public MainMenu(GraphicsContext gc) {
 		this.gc = gc;
 
-		this.playButton = new Image("file:resources\\play_button.png");
-		this.playButtonPressed = new Image("file:resources\\play_button_pressed.png");
-		this.playButtonSelected = new Image("file:resources\\play_button_selected.png");
 		this.playX = 1920/2-200/2;
 		this.playY = 1080-7*65;
 
-		this.shopButton = new Image("file:resources\\shop_button.png");
-		this.shopButtonPressed = new Image("file:resources\\shop_button_pressed.png");
-		this.shopButtonSelected = new Image("file:resources\\shop_button_selected.png");
 		this.shopX = 1920/2-200/2;
 		this.shopY = 1080-6*65;
 
-		this.achievementsButton = new Image("file:resources\\achievements_button.png");
-		this.achievementsButtonPressed = new Image("file:resources\\achievements_button_pressed.png");
-		this.achievementsButtonSelected = new Image("file:resources\\achievements_button_selected.png");
 		this.achievementsX = 1920/2-200/2;
 		this.achievementsY = 1080-5*65;
 
-		this.highscoresButton = new Image("file:resources\\highscores_button.png");
-		this.highscoresButtonPressed = new Image("file:resources\\highscores_button_pressed.png");
-		this.highscoresButtonSelected = new Image("file:resources\\highscores_button_selected.png");
 		this.highscoresX = 1920/2-200/2;
 		this.highscoresY = 1080-4*65;
 		
-		this.optionsButton = new Image("file:resources\\options_button.png");
-		this.optionsButtonPressed = new Image("file:resources\\options_button_pressed.png");
-		this.optionsButtonSelected = new Image("file:resources\\options_button_selected.png");
 		this.optionsX = 1920/2-200/2;
 		this.optionsY = 1080-3*65;
 
-		this.creditsButton = new Image("file:resources\\credits_button.png");
-		this.creditsButtonPressed = new Image("file:resources\\credits_button_pressed.png");
-		this.creditsButtonSelected = new Image("file:resources\\credits_button_selected.png");
 		this.creditsX = 1920/2-200/2;
 		this.creditsY = 1080-2*65;
 
-		this.exitButton = new Image("file:resources\\exit_button.png");
-		this.exitButtonPressed = new Image("file:resources\\exit_button_pressed.png");
-		this.exitButtonSelected = new Image("file:resources\\exit_button_selected.png");
 		this.exitX = 1920/2-200/2;
 		this.exitY = 1080-65;
 		
@@ -94,43 +66,43 @@ public class MainMenu {
 	public void getSelectedOption() {
 		switch(this.buttonSelected) {
 		case PLAY:
-			gc.drawImage(playButtonPressed, playX, playY);
+			drawButton(button_pressed, "play", playX, playY, buttonHeight, buttonWidth);
 			Runner.submenuType = Runner.SubmenuType.PLAY;
 			Runner.menuState = Runner.MenuState.PREPARESUBMENU;
 			break;
 			
 		case SHOP:
-			gc.drawImage(shopButtonPressed, shopX, shopY);
+			drawButton(button_pressed, "shop", shopX, shopY, buttonHeight, buttonWidth);
 			Runner.submenuType = Runner.SubmenuType.SHOP;
 			Runner.menuState = Runner.MenuState.PREPARESUBMENU;
 			break;
 			
 		case ACHIEVEMENTS:
-			gc.drawImage(achievementsButtonPressed, achievementsX, achievementsY);
+			drawButton(button_pressed, "achievements", achievementsX, achievementsY, buttonHeight, buttonWidth);
 			Runner.submenuType = Runner.SubmenuType.ACHIEVEMENTS;
 			Runner.menuState = Runner.MenuState.PREPARESUBMENU;
 			break;
 			
 		case HIGHSCORES:
-			gc.drawImage(highscoresButtonPressed, highscoresX, highscoresY);
+			drawButton(button_pressed, "highscores", highscoresX, highscoresY, buttonHeight, buttonWidth);
 			Runner.submenuType = Runner.SubmenuType.HIGHSCORES;
 			Runner.menuState = Runner.MenuState.PREPARESUBMENU;
 			break;
 			
 		case OPTIONS:
-			gc.drawImage(optionsButtonPressed, optionsX, optionsY);
+			drawButton(button_pressed, "options", optionsX, optionsY, buttonHeight, buttonWidth);
 			Runner.submenuType = Runner.SubmenuType.OPTIONS;
 			Runner.menuState = Runner.MenuState.PREPARESUBMENU;
 			break;
 			
 		case CREDITS:
-			gc.drawImage(creditsButtonPressed, creditsX, creditsY);
+			drawButton(button_pressed, "credits", creditsX, creditsY, buttonHeight, buttonWidth);
 			Runner.submenuType = Runner.SubmenuType.CREDITS;
 			Runner.menuState = Runner.MenuState.PREPARESUBMENU;
 			break;
 			
 		case EXIT:
-			gc.drawImage(exitButtonPressed, exitX, exitY);
+			drawButton(button_pressed, "exit", exitX, exitY, buttonHeight, buttonWidth);
 			Runner.menuState = Runner.MenuState.EXIT;
 		}
 	}
@@ -139,76 +111,75 @@ public class MainMenu {
 		if(!gameJustStarted) {
 			gc.getCanvas().setTranslateX(1920);
 		}
-		
-		gc.drawImage(playButtonSelected, playX, playY);
-		gc.drawImage(shopButton, shopX, shopY);
-		gc.drawImage(achievementsButton, achievementsX, achievementsY);
-		gc.drawImage(highscoresButton, highscoresX, highscoresY);
-		gc.drawImage(optionsButton, optionsX, optionsY);
-		gc.drawImage(creditsButton, creditsX, creditsY);
-		//gc.drawImage(exitButton, exitX, exitY);
-		drawButton(button, "LOLOLOLOLOLOLOLOLOLLOLOOLOL", exitX, exitY, buttonHeight, buttonWidth);
+
+		drawButton(button_selected, "play", playX, playY, buttonHeight, buttonWidth);
+		drawButton(button, "shop", shopX, shopY, buttonHeight, buttonWidth);
+		drawButton(button, "achievements", achievementsX, achievementsY, buttonHeight, buttonWidth);
+		drawButton(button, "highscores", highscoresX, highscoresY, buttonHeight, buttonWidth);
+		drawButton(button, "options", optionsX, optionsY, buttonHeight, buttonWidth);
+		drawButton(button, "credits", creditsX, creditsY, buttonHeight, buttonWidth);
+		drawButton(button, "exit", exitX, exitY, buttonHeight, buttonWidth);
 
 		this.buttonSelected = ButtonSelected.PLAY;
 		
 		return false;
 	}
 
-	private void drawButton(Image img, String string, int x, int y, int buttonH, int buttonW) { //TODO FIGURE THIS OUT
+	private void drawButton(Image img, String string, int x, int y, int buttonH, int buttonW) { 
 		gc.drawImage(img, x, y);
 		
 		Text text = new Text(string);
+		text.setFont(new Font("Consolas", 20));
 		double textH = text.getLayoutBounds().getHeight();
 		double textW = text.getLayoutBounds().getWidth();
 		
 		gc.setFill(Color.WHITE);
 		gc.setFont(Font.font("Consolas", 20));
-		gc.fillText(string, x + buttonW/2 - textW/2, y + buttonH/2 + textH/2);
-		// TODO Auto-generated method stub
+		gc.fillText(string, x + buttonW/2 - textW/2, y + buttonH/2 + textH/2 - 4);
 		
 	}
 
 	public void selectNextOption() {
 		switch (this.buttonSelected) {
 		case PLAY:
-			gc.drawImage(playButton, playX, playY);
-			gc.drawImage(shopButtonSelected, shopX, shopY);
+			drawButton(button, "play", playX, playY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "shop", shopX, shopY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.SHOP;
 			break;
 
 		case SHOP:
-			gc.drawImage(shopButton, shopX, shopY);
-			gc.drawImage(achievementsButtonSelected, achievementsX, achievementsY);
+			drawButton(button, "shop", shopX, shopY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "achievements", achievementsX, achievementsY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.ACHIEVEMENTS;
 			break;
 
 		case ACHIEVEMENTS:
-			gc.drawImage(achievementsButton, achievementsX, achievementsY);
-			gc.drawImage(highscoresButtonSelected, highscoresX, highscoresY);
+			drawButton(button, "achievements", achievementsX, achievementsY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "highscores", highscoresX, highscoresY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.HIGHSCORES;
 			break;
 
 		case HIGHSCORES:
-			gc.drawImage(highscoresButton, highscoresX, highscoresY);
-			gc.drawImage(optionsButtonSelected, optionsX, optionsY);
+			drawButton(button, "highscores", highscoresX, highscoresY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "options", optionsX, optionsY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.OPTIONS;
 			break;
 
 		case OPTIONS:
-			gc.drawImage(optionsButton, optionsX, optionsY);
-			gc.drawImage(creditsButtonSelected, creditsX, creditsY);
+			drawButton(button, "options", optionsX, optionsY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "credits", creditsX, creditsY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.CREDITS;
 			break;
 			
 		case CREDITS:
-			gc.drawImage(creditsButton, creditsX, creditsY);
-			gc.drawImage(exitButtonSelected, exitX, exitY);
+			drawButton(button, "credits", creditsX, creditsY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "exit", exitX, exitY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.EXIT;
 			break;
 
 		case EXIT:
-			gc.drawImage(exitButton, exitX, exitY);
-			gc.drawImage(playButtonSelected, playX, playY);
+			drawButton(button, "exit", exitX, exitY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "play", playX, playY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.PLAY;
 		}
 	}
@@ -216,44 +187,44 @@ public class MainMenu {
 	public void selectPreviousOption() {
 		switch (this.buttonSelected) {
 		case PLAY:
-			gc.drawImage(playButton, playX, playY);
-			gc.drawImage(exitButtonSelected, exitX, exitY);
+			drawButton(button, "play", playX, playY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "exit", exitX, exitY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.EXIT;
 			break;
 
 		case SHOP:
-			gc.drawImage(shopButton, shopX, shopY);
-			gc.drawImage(playButtonSelected, playX, playY);
+			drawButton(button, "shop", shopX, shopY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "play", playX, playY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.PLAY;
 			break;
 
 		case ACHIEVEMENTS:
-			gc.drawImage(achievementsButton, achievementsX, achievementsY);
-			gc.drawImage(shopButtonSelected, shopX, shopY);
+			drawButton(button, "achievements", achievementsX, achievementsY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "shop", shopX, shopY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.SHOP;
 			break;
 
 		case HIGHSCORES:
-			gc.drawImage(highscoresButton, highscoresX, highscoresY);
-			gc.drawImage(achievementsButtonSelected, achievementsX, achievementsY);
+			drawButton(button, "highscores", highscoresX, highscoresY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "achievements", achievementsX, achievementsY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.ACHIEVEMENTS;
 			break;
 			
 		case OPTIONS:
-			gc.drawImage(optionsButton, optionsX, optionsY);
-			gc.drawImage(highscoresButtonSelected, highscoresX, highscoresY);
+			drawButton(button, "options", optionsX, optionsY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "highscores", highscoresX, highscoresY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.HIGHSCORES;
 			break;
 
 		case CREDITS:
-			gc.drawImage(creditsButton, creditsX, creditsY);
-			gc.drawImage(optionsButtonSelected, optionsX, optionsY);
+			drawButton(button, "credits", creditsX, creditsY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "options", optionsX, optionsY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.OPTIONS;
 			break;
 
 		case EXIT:
-			gc.drawImage(exitButton, exitX, exitY);
-			gc.drawImage(creditsButtonSelected, creditsX, creditsY);
+			drawButton(button, "exit", exitX, exitY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "credits", creditsX, creditsY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.CREDITS;
 		}		
 	}

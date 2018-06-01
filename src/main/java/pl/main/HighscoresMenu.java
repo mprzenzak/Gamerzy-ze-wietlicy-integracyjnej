@@ -6,7 +6,6 @@ import javafx.scene.image.Image;
 public class HighscoresMenu {
 
 	private GraphicsContext gc;
-	private Image backButton, backButtonSelected, backButtonPressed;
 	private Image table;
 
 	private int backX, backY;
@@ -14,9 +13,6 @@ public class HighscoresMenu {
 	public HighscoresMenu(GraphicsContext gc) {
 		this.gc = gc;
 
-		this.backButton = new Image("file:resources\\backButton.png");
-		this.backButtonSelected = new Image("file:resources\\backButtonSelected.png");
-		this.backButtonPressed = new Image("file:resources\\backButtonPressed.png");
 		this.backX = 15;
 		this.backY = 15;
 		// TODO Auto-generated constructor stub

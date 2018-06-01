@@ -34,12 +34,16 @@ public class Runner extends Application {
 	HighscoresMenu highscoresMenu;
 	OptionsMenu optionsMenu;
 	CreditsMenu creditsMenu;
+	
+	Gameplay game;
 
 	HashMap<String, KeyState> keysActive;
 	
 	boolean hasGameJustStarted;
 	int exitAnimationPosition;
 	int enterAnimationPosition;
+	
+	GraphicsContext bgGc;
 	GraphicsContext moneyGc;
 	int money;
 
@@ -53,7 +57,6 @@ public class Runner extends Application {
 		RootPaneAndGcSet rpgc = setPanes();
 		Scene scene = setStage(stage, rpgc);
 		createMenus(rpgc);
-		setMenuBg(rpgc);
 
 		keysActive = new HashMap<>(); // stores pressed keys
 		exitAnimationPosition = 0;
@@ -61,7 +64,7 @@ public class Runner extends Application {
 		hasGameJustStarted = true;
 		money = 0; //
 		// main loop
-		new AnimationTimer() {
+		new AnimationTimer() { //
 
 			@Override
 			public void handle(long now) {
@@ -105,6 +108,7 @@ public class Runner extends Application {
 		highscoresMenu = new HighscoresMenu(rpgc.getHighscoresMenuGc());
 		optionsMenu = new OptionsMenu(rpgc.getOptionsMenuGc());
 		creditsMenu = new CreditsMenu(rpgc.getCreditsMenuGc());
+		bgGc = rpgc.getBgGc();
 		moneyGc = rpgc.getMoneyGc();
 
 		menuState = MenuState.PREPAREMENU;
@@ -112,10 +116,10 @@ public class Runner extends Application {
 
 	}
 
-	private void setMenuBg(RootPaneAndGcSet rpgc) {
+	private void paintMenuBg() {
 		
 		Image bgMenuImage = new Image("file:resources\\bg.jpg");
-		rpgc.getBgGc().drawImage(bgMenuImage, 0, 0);
+		bgGc.drawImage(bgMenuImage, 0, 0);
 		
 		Image coin = new Image("file:resources\\coin.png");
 		moneyGc.drawImage(coin, 1700, 15);
@@ -207,8 +211,10 @@ public class Runner extends Application {
 		
 		switch (menuState) {
 		case PREPAREMENU:
-			hasGameJustStarted = mainMenu.displayMainMenu(hasGameJustStarted);
+			paintMenuBg();
 			updateMoneyCounter();
+			
+			hasGameJustStarted = mainMenu.displayMainMenu(hasGameJustStarted);
 			menuState = MenuState.SUBMENU;
 			break;
 		
@@ -221,6 +227,7 @@ public class Runner extends Application {
 			if(exitAnimationPosition >= -1920) {
 				menuExitAnimation();
 				menuEnterAnimation();
+				
 			} else {
 				exitAnimationPosition = 0;
 				enterAnimationPosition = 1920;
@@ -241,6 +248,7 @@ public class Runner extends Application {
 		case PREPAREGAMEPLAY:
 //			playMenu.getMode();
 //			playMenu.getNumberOfPlayers();
+			
 			//-----------------------------------------------------------------------------------------------------------TU PRZYGOTOWANIE ROZGRYWKI
 			break;
 

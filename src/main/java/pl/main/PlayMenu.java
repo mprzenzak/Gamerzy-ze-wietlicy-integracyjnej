@@ -2,18 +2,24 @@ package pl.main;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class PlayMenu {
 
 	private GraphicsContext gc;
-	private Image backButton, backButtonSelected, backButtonPressed;
+	
+	private Image button, button_selected, button_pressed;
+	private int buttonWidth, buttonHeight;
+	
 	private Image numberOfPlayersButton_singlePressed, numberOfPlayersButton_multiPressed,
 			numberOfPlayersButton_singleSelected, numberOfPlayersButton_singleSelected_multiPressed,
 			numberOfPlayersButton_multiSelected, numberOfPlayersButton_multiSelected_singlePressed;
 	private Image modeButton_levelsPressed, modeButton_infinityPressed, modeButton_levelsSelected,
 			modeButton_levelsSelected_infinityPressed, modeButton_infinitySelected,
 			modeButton_infinitySelected_levelsPressed;
-	private Image startButton, startButtonSelected, startButtonPressed;
+	
 	private Image goalsBox;
 	private Image descriptionBox;
 	
@@ -33,9 +39,6 @@ public class PlayMenu {
 	public PlayMenu(GraphicsContext gc) {
 		this.gc = gc;
 		
-		this.backButton = new Image("file:resources\\backButton.png");
-		this.backButtonSelected = new Image("file:resources\\backButtonSelected.png");
-		this.backButtonPressed = new Image("file:resources\\backButtonPressed.png");
 		this.backX = 15;
 		this.backY = 15;
 		
@@ -57,9 +60,6 @@ public class PlayMenu {
 		this.modeX = 15;
 		this.modeY = 1080-180;
 		
-		this.startButton = new Image("file:resources\\start_button.png");
-		this.startButtonSelected = new Image("file:resources\\start_button_selected.png");
-		this.startButtonPressed = new Image("file:resources\\start_button_pressed.png");
 		this.startX = 15;
 		this.startY = 1080-65;
 		
@@ -70,6 +70,12 @@ public class PlayMenu {
 		this.descriptionBox = new Image("file:resources\\descriptionBox.png");
 		this.descX = 450;
 		this.descY = 1080-460;		
+		
+		this.button = new Image("file:resources\\button.png");
+		this.button_selected = new Image("file:resources\\buttonSelected.png");
+		this.button_pressed = new Image("file:resources\\buttonPressed.png");
+		this.buttonWidth = 200;
+		this.buttonHeight = 50;
 	}
 
 	private enum ButtonSelected {
@@ -92,13 +98,28 @@ public class PlayMenu {
 		LEVELS, INFINITY
 	}
 
-	public void displayPlayMenu() {
+	private void drawButton(Image img, String string, int x, int y, int buttonH, int buttonW) {
+		gc.drawImage(img, x, y);
+		
+		Text text = new Text(string);
+		text.setFont(new Font("Consolas", 20));
+		double textH = text.getLayoutBounds().getHeight();
+		double textW = text.getLayoutBounds().getWidth();
+		
+		gc.setFill(Color.WHITE);
+		gc.setFont(Font.font("Consolas", 20));
+		gc.fillText(string, x + buttonW/2 - textW/2, y + buttonH/2 + textH/2 - 4);
+		
+	}
+	
+	public void displayPlayMenu() { //
 		gc.getCanvas().setTranslateX(1920);
 		
-		gc.drawImage(backButtonSelected, backX, backY);
+		drawButton(button_selected, "back", backX, backY, buttonHeight, buttonWidth);
+		drawButton(button, "start", startX, startY, buttonHeight, buttonWidth);
+
 		gc.drawImage(numberOfPlayersButton_singlePressed, numberOfPlayersX, numberOfPlayersY);
 		gc.drawImage(modeButton_levelsPressed, modeX, modeY);
-		gc.drawImage(startButton, startX, startY);
 		gc.drawImage(descriptionBox, descX, descY);
 		gc.drawImage(goalsBox, goalsX, goalsY);
 
@@ -107,11 +128,11 @@ public class PlayMenu {
 		this.modePressed = ModePressed.LEVELS;
 	}
 
-	public void selectPreviousOption() {
+	public void selectPreviousOption() { //
 		switch (this.buttonSelected) {
 		case BACK:
-			gc.drawImage(backButton, backX, backY);
-			gc.drawImage(startButtonSelected, startX, startY);
+			drawButton(button, "back", backX, backY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "start", startX, startY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.START;
 			break;
 			
@@ -121,7 +142,7 @@ public class PlayMenu {
 			} else {
 				gc.drawImage(numberOfPlayersButton_multiPressed, numberOfPlayersX, numberOfPlayersY);
 			}
-			gc.drawImage(backButtonSelected, backX, backY);
+			drawButton(button_selected, "back", backX, backY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.BACK;
 			break;
 			
@@ -141,7 +162,7 @@ public class PlayMenu {
 			break;
 			
 		case START:
-			gc.drawImage(startButton, startX, startY);
+			drawButton(button, "start", startX, startY, buttonHeight, buttonWidth);
 			if (this.modePressed == ModePressed.LEVELS) {
 				gc.drawImage(modeButton_levelsSelected, modeX, modeY);
 			} else {
@@ -152,10 +173,10 @@ public class PlayMenu {
 		}
 	}
 
-	public void selectNextOption() {
+	public void selectNextOption() { //
 		switch (this.buttonSelected) {
 		case BACK:
-			gc.drawImage(backButton, backX, backY);
+			drawButton(button, "back", backX, backY, buttonHeight, buttonWidth);
 			if (this.playersNumberPressed == PlayersNumberPressed.ONE) {
 				gc.drawImage(numberOfPlayersButton_singleSelected, numberOfPlayersX, numberOfPlayersY);
 			} else {
@@ -186,13 +207,13 @@ public class PlayMenu {
 			} else {
 				gc.drawImage(modeButton_infinityPressed, modeX, modeY);
 			}
-			gc.drawImage(startButtonSelected, startX, startY);
+			drawButton(button_selected, "start", startX, startY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.START;
 			break;
 			
 		case START:
-			gc.drawImage(startButton, startX, startY);
-			gc.drawImage(backButtonSelected, backX, backY);
+			drawButton(button, "start", startX, startY, buttonHeight, buttonWidth);
+			drawButton(button_selected, "back", backX, backY, buttonHeight, buttonWidth);
 			this.buttonSelected = ButtonSelected.BACK;
 		}
 	}
@@ -202,7 +223,7 @@ public class PlayMenu {
 	}
 
 	@SuppressWarnings("incomplete-switch")
-	public void selectLeftOption() {
+	public void selectLeftOption() { //
 		switch (this.buttonSelected) {
 		case NUMBER_OF_PLAYERS:
 			if (this.playersNumberSelected == PlayersNumberSelected.TWO) {
@@ -228,7 +249,7 @@ public class PlayMenu {
 	}
 
 	@SuppressWarnings("incomplete-switch")
-	public void selectRightOption() {
+	public void selectRightOption() { //
 		switch (this.buttonSelected) {
 		case NUMBER_OF_PLAYERS:
 			if (this.playersNumberSelected == PlayersNumberSelected.ONE) {
@@ -254,10 +275,10 @@ public class PlayMenu {
 	}
 
 	
-	public void getSelectedOption() {
+	public void getSelectedOption() { //
 		switch(this.buttonSelected) {
 		case BACK:
-			gc.drawImage(backButtonPressed, backX, backY);
+			drawButton(button_pressed, "back", backX, backY, buttonHeight, buttonWidth);
 			Runner.submenuType = Runner.SubmenuType.MAIN;
 			Runner.menuState = Runner.MenuState.PREPARESUBMENU;
 			break;
@@ -283,7 +304,7 @@ public class PlayMenu {
 			break;
 			
 		case START:
-			gc.drawImage(startButtonPressed, startX, startY);
+			drawButton(button_pressed, "start", startX, startY, buttonHeight, buttonWidth);
 			Runner.menuState = Runner.MenuState.PREPAREGAMEPLAY;
 		}		
 	}
