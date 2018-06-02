@@ -3,12 +3,14 @@ package pl.main;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.HashMap;
-import java.util.Map;
 
 import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -22,8 +24,10 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import pl.main.values.PaneCanvasGcSet;
+import pl.main.values.BooleanValue;
 import pl.main.values.GroupPanesAndGcSet;
 import pl.main.values.ScreenAndPaneDimensions;
+import pl.gameplayOneFile.Gameplay;;
 
 public class Runner extends Application {
 
@@ -43,6 +47,7 @@ public class Runner extends Application {
 
 	HashMap<String, KeyState> keysActive;
 	
+	BooleanValue next;
 	boolean hasGameJustStarted;
 	int exitAnimationPosition;
 	int enterAnimationPosition;
@@ -64,7 +69,7 @@ public class Runner extends Application {
 		exitAnimationPosition = 0;
 		enterAnimationPosition = 1920;
 		hasGameJustStarted = true;
-		money = 0; //
+		money = 0; //TODO wczytaj z pliku
 		// main loop
 		new AnimationTimer() { //
 
@@ -110,7 +115,7 @@ public class Runner extends Application {
 		highscoresMenu = new HighscoresMenu(gpgc.getGc("highscoresMenu"));
 		optionsMenu = new OptionsMenu(gpgc.getGc("optionsMenu"));
 		creditsMenu = new CreditsMenu(gpgc.getGc("creditsMenu"));
-
+		
 		menuState = MenuState.PREPAREMENU;
 		submenuType = SubmenuType.MAIN;
 
@@ -118,17 +123,19 @@ public class Runner extends Application {
 
 	private void paintMenuBg(GraphicsContext bgGc, GraphicsContext moneyGc) {
 		
-		Image bgMenuImage = new Image("file:resources\\bg.jpg");
+		Image bgMenuImage = new Image("file:resources\\bg.jpg"); //TODO otocz wszystkie sciezki try/catch
 		bgGc.drawImage(bgMenuImage, 0, 0);
 		
 		Image coin = new Image("file:resources\\coin.png");
 		moneyGc.drawImage(coin, 1700, 15);
 	}
+	
 	private Scene setStage(Stage stage, GroupPanesAndGcSet gpgc) {
 		stage.setTitle("Jetpack Joe");
 		stage.setFullScreen(true);
 		stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 		Scene scene = new Scene(gpgc.getPane("root"), Color.BLACK);
+		scene.setCursor(Cursor.NONE);
 		stage.setScene(scene);
 
 		return scene;
@@ -137,6 +144,7 @@ public class Runner extends Application {
 	private GroupPanesAndGcSet setPanes() {
 		ScreenAndPaneDimensions dimensions = getDimensions();
 
+		//menu components
 		PaneCanvasGcSet pcgBg = setPaneComponents(dimensions);
 		scaleCanvas(pcgBg.getCanvas(), dimensions);
 		
@@ -164,10 +172,18 @@ public class Runner extends Application {
 		PaneCanvasGcSet pcgCreditsMenu = setPaneComponents(dimensions);
 		scaleCanvas(pcgCreditsMenu.getCanvas(), dimensions);
 		
+		//game components
 		PaneCanvasGcSet pcgPlayer = setPaneComponents(dimensions);
 		scaleCanvas(pcgPlayer.getCanvas(), dimensions);
 		
-		Pane gamePane = new Pane(pcgBg.getPane(), pcgMoney.getPane(), pcgPlayer.getPane());
+		PaneCanvasGcSet pcgGameBg = setPaneComponents(dimensions);
+		scaleCanvas(pcgGameBg.getCanvas(), dimensions);
+		
+		PaneCanvasGcSet pcgGameMoney = setPaneComponents(dimensions);
+		scaleCanvas(pcgGameMoney.getCanvas(), dimensions);
+		
+		//grouping panes
+		Pane gamePane = new Pane(pcgGameBg.getPane(), pcgGameMoney.getPane(), pcgPlayer.getPane());
 		
 		Pane menuPane = new Pane(pcgBg.getPane(), pcgMoney.getPane(), pcgMainMenu.getPane(), pcgPlayMenu.getPane(), pcgShopMenu.getPane(),
 				pcgAchievementsMenu.getPane(), pcgHighscoresMenu.getPane(), pcgOptionsMenu.getPane(),
@@ -190,6 +206,11 @@ public class Runner extends Application {
 		gcMap.put("highscoresMenu", pcgHighscoresMenu.getGc());
 		gcMap.put("optionsMenu", pcgOptionsMenu.getGc());
 		gcMap.put("creditsMenu", pcgCreditsMenu.getGc());
+		
+		gcMap.put("gameBg", pcgGameBg.getGc());
+		gcMap.put("gameMoney", pcgGameMoney.getGc());
+		gcMap.put("player", pcgPlayer.getGc());
+
 		
 		GroupPanesAndGcSet gpgc = new GroupPanesAndGcSet(pMap, gcMap);
 
@@ -224,13 +245,12 @@ public class Runner extends Application {
 
 	
 	private void update(GroupPanesAndGcSet gpgc) { // TODO Auto-generated method stub
-		
 		switch (menuState) {
 		case PREPAREMENU:
 			paintMenuBg(gpgc.getGc("bg"), gpgc.getGc("money"));
 			updateMoneyCounter(gpgc.getGc("money"));
 
-			hasGameJustStarted = mainMenu.displayMainMenu(hasGameJustStarted);
+			hasGameJustStarted = mainMenu.displayMenu(hasGameJustStarted);
 			menuState = MenuState.SUBMENU;
 			break;
 		
@@ -263,15 +283,22 @@ public class Runner extends Application {
 			break;
 
 		case PREPAREGAMEPLAY:
-		    fadeTransition(gpgc.getPane("menu"), 1, 0, 1000);
-//			playMenu.getMode();
-//			playMenu.getNumberOfPlayers();
-		    menuState = MenuState.GAMEPLAY;
-			//-----------------------------------------------------------------------------------------------------------TU PRZYGOTOWANIE ROZGRYWKI
+			game = new Gameplay(money, playMenu.getMode(), playMenu.getNumberOfPlayers());
+		    game.initContent(gpgc);
+
+		    SequentialTransition transition = transitionPanes(gpgc.getPane("menu"), gpgc.getPane("game"));
+		    next = new BooleanValue(false);
+		    
+			transition.setOnFinished(e -> next.setX(true));
+			
+			menuState = MenuState.GAMEPLAY;
 			break;
 
 		case GAMEPLAY:
-			//-----------------------------------------------------------------------------------------------------------TU PETLA SAMEJ ROZGRYWKI
+			if (next.getX()) {
+				//-----------------------------------------------------------------------------------------------------------TU PETLA SAMEJ ROZGRYWKI
+				game.play();
+			}
 			break;
 
 		case EXIT:
@@ -279,13 +306,24 @@ public class Runner extends Application {
 		}
 	}
 
-	private void fadeTransition(Node node, double fromValue, double toValue, int duration) {
+	private SequentialTransition transitionPanes(Pane paneOut, Pane paneIn) {
+		SequentialTransition sequentialTransition = new SequentialTransition();
+		
+	    FadeTransition fadeOut = getFadeTransition(paneOut, 1, 0, 500);
+	    FadeTransition fadeIn = getFadeTransition(paneIn, 0, 1, 500);
+
+	    sequentialTransition.getChildren().addAll(fadeOut, fadeIn);
+	    sequentialTransition.play();
+	    
+	    return sequentialTransition;
+	}
+
+	private FadeTransition getFadeTransition(Node node, double fromValue, double toValue, int duration) {
 		FadeTransition ft = new FadeTransition(Duration.millis(duration), node);
 	    ft.setFromValue(fromValue);
-	    ft.setToValue(toValue);
-//	    node.setOpacity(toValue);
-	 
-	    ft.play();		
+	    ft.setToValue(toValue);	 
+	    
+	    return ft;
 	}
 
 	private void updateMoneyCounter(GraphicsContext moneyGc) { 
@@ -348,7 +386,7 @@ public class Runner extends Application {
 		case CREDITS:
 			creditsMenu.getGc().getCanvas().setTranslateX(enterAnimationPosition);
 		}		
-		enterAnimationPosition -= 25;
+		enterAnimationPosition -= 40;
 	}
 
 	private void menuExitAnimation() {
@@ -382,7 +420,7 @@ public class Runner extends Application {
 				creditsMenu.getGc().getCanvas().setTranslateX(exitAnimationPosition);
 			}
 			
-			exitAnimationPosition -= 25;
+			exitAnimationPosition -= 40;
 	}
 
 	private void exit() { // TODO Auto-generated method stub
@@ -392,25 +430,25 @@ public class Runner extends Application {
 	private void displayChosenSubmenu() {
 		switch (submenuType) {
 		case MAIN:
-			mainMenu.displayMainMenu(hasGameJustStarted);
+			mainMenu.displayMenu(hasGameJustStarted);
 			break;
 		case PLAY:
-			playMenu.displayPlayMenu();
+			playMenu.displayMenu();
 			break;
 		case SHOP:
-			shopMenu.displayShopMenu();
+			shopMenu.displayMenu();
 			break;
 		case ACHIEVEMENTS:
-			achievementsMenu.displayAchievementsMenu();
+			achievementsMenu.displayMenu();
 			break;
 		case HIGHSCORES:
-			highscoresMenu.displayHighscoresMenu();
+			highscoresMenu.displayMenu();
 			break;
 		case OPTIONS:
-			optionsMenu.displayOptionsMenu();
+			optionsMenu.displayMenu();
 			break;
 		case CREDITS:
-			creditsMenu.displayCreditsMenu();
+			creditsMenu.displayMenu();
 		}
 	}
 
@@ -510,7 +548,7 @@ public class Runner extends Application {
 	}
 
 	public enum MenuState {
-		PREPAREMENU, MENU_ENTERANIMATION, PREPARESUBMENU, SUBMENU, PREPAREGAMEPLAY, GAMEPLAY, PREPAREPAUSE, PAUSE, PLAYERDIED, NEWHIGHSCORE, GAMEOVER, EXIT
+		PREPAREMENU, MENU_ENTERANIMATION, PREPARESUBMENU, SUBMENU, PREPAREGAMEPLAY, GAMEPLAY, PLAYERDIED, NEWHIGHSCORE, GAMEOVER, EXIT
 	}
 	
 	public enum SubmenuType {

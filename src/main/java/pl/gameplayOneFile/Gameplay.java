@@ -1,66 +1,152 @@
-package gameplayOneFile;
+package pl.gameplayOneFile;
 
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javafx.animation.AnimationTimer;
-import javafx.application.Application;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import pl.main.LevelData;
+import pl.main.values.GroupPanesAndGcSet;
 
-public class Gameplay extends Application {
+public class Gameplay {
+	
 	private HashMap<KeyCode, Boolean> keys = new HashMap<KeyCode, Boolean>();
 	private ArrayList<Node> blocks = new ArrayList<Node>();
 	public GraphicsContext gc;
-	private Image playerImg;
 	private Pane appRoot = new Pane();
 	public int levelWidth = 720;
 	ImageView ivPlayer;
-	private Node player;
+	
+	private GameState gameState;
+	private Player player1;
+	private Player player2;
+	
+	GraphicsContext bgGc;
+	GraphicsContext valuesGc;
+	private int money;
+	private int numberOfPlayers;
+	private String mode;
+	
+	private int points;
 
-	// public void initContent() {
-	// appRoot.setStyle("-fx-background-color: #F0591E");
-	// }
-	private void initContent() {
-		Rectangle background = new Rectangle(720, 480);
-		appRoot.setStyle("-fx-background-color: #F0591E");
-		//player = createEntity(0, 350, 40, 40, Color.YELLOW);
+	public Gameplay(int money, String mode, int numberOfPlayers) { // TODO Auto-generated constructor stub
+		this.money = money;
+		this.numberOfPlayers = numberOfPlayers;
+		this.mode = mode;
+		this.points = 0;
 	}
 
-//	private Node createEntity(int x, int y, int w, int h, Color color) {
-//		Rectangle entity = new Rectangle(w, h);
-//		entity.setTranslateX(x);
-//		entity.setTranslateY(y);
-//		entity.setFill(color);
-//		appRoot.getChildren().add(entity);
-//		return entity;
-//
-//	}
+	public void initContent(GroupPanesAndGcSet gpgc) {
+		bgGc = gpgc.getGc("gameBg");
+		valuesGc = gpgc.getGc("gameMoney");
+		
+		valuesGc.setFill(Color.WHITE);
+		valuesGc.setFont(Font.font("Consolas", 45));
+		
+		paintScene();
+		updateMoneyCounter();
+		updatePointsCounter();
+		
+		player1 = new Player();
+		if (numberOfPlayers == 2) {
+			player2 = new Player();
+		}
+	}
 
-	private GraphicsContext context;
-	///////////////////////////////////////////////////////////////////////////////////////////
+	private void paintScene() { // TODO Auto-generated method stub
+		Image bgImage = new Image("file:resources\\gameBg.jpg");
+		bgGc.drawImage(bgImage, 0, 0);
+		
+		Image coin = new Image("file:resources\\coin.png");
+		valuesGc.drawImage(coin, 1700, 15);
+	}
+
+	private void updateMoneyCounter() { 
+		valuesGc.clearRect(1760, 0, 200, 200);
+		
+		String moneyString = Integer.toString(money);
+		while (moneyString.length() < 5) {
+			moneyString = "0" + moneyString;
+		}
+		valuesGc.fillText(moneyString, 1760, 55);		
+	}
+	
+	private void updatePointsCounter() {
+		valuesGc.clearRect(15, 0, 800, 200);
+		
+		String pointsString = Integer.toString(points);
+		while (pointsString.length() < 10) {
+			pointsString = "0" + pointsString;
+		}
+		if (mode == "levels") {
+			pointsString = "Points: " + pointsString;
+		} else {
+			pointsString = "Meters: " + pointsString;
+		}
+		
+		valuesGc.fillText(pointsString, 15, 55);		
+	}
+	
+	public void play() { // TODO Auto-generated method stub
+		switch (gameState) {
+		case START: //
+			playersEnter();
+			break;
+			
+		case PLAYING: //
+			updateBg();
+			break;
+			
+		case PAUSE: //
+			break;
+			
+		case KILLED: //
+			break;
+			
+		case REVIVESCREEN: //
+			break;
+			
+		case REVIVED: //
+			break;
+			
+		case GAMEOVER: //
+			
+		}
+	}
+	
+	private void updateBg() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void playersEnter() {
+		if(numberOfPlayers == 1) {
+			player1.enter(500);
+		} else {
+			player1.enter(400);
+			player2.enter(600);
+		}
+	}
+
+	private enum GameState {
+		START, PLAYING, PAUSE, KILLED, REVIVESCREEN, REVIVED, GAMEOVER
+	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Player
 	public static Point2D playerGoDown = new Point2D(0, 0);
 	public static Point2D playerGoRight = new Point2D(0, 0);
 	// final Point2D playerPosition = new Point2D(0, 0);
 	// player.moveTo(playerPosition);
 	public boolean canJump = true;
-	static int playerX;
-	static int playerY;
+	int playerX;
+	int playerY;
 	private int x;
 	private int y;
 
@@ -185,25 +271,24 @@ public class Gameplay extends Application {
 		}
 	}
 
-	public static int getTranslateX() {
+	public int getTranslateX() {
 		return playerX;
 	}
 
 	public void setTranslateX(int playerX) {
-		Gameplay.playerX = playerX;
+		this.playerX = playerX;
 	}
 
-	public static int getTranslateY() {
+	public int getTranslateY() {
 		return playerY;
 	}
 
 	public void setTranslateY(int playerY) {
-		Gameplay.playerY = playerY;
+		this.playerY = playerY;
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////
 	// Position
-	///////////////////////////////////////////////////////////////////////////////////////
 	public int playerPosition(int playerX, int playerY) {
 		this.x = playerX;
 		this.y = playerY;
@@ -221,7 +306,7 @@ public class Gameplay extends Application {
 
 	// PlayerX = playerX;
 	// PlayerY = playerY;
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// public playerPosition translate(int x, int y) {
 	// return new playerPosition(playerX, playerY);
 	// }
@@ -231,8 +316,6 @@ public class Gameplay extends Application {
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// position end
-	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Gameloop
 	int frameRate;
 	boolean running;
@@ -241,7 +324,7 @@ public class Gameplay extends Application {
 	float interval;
 
 	public void GameLoop(final GraphicsContext context) {
-		this.context = context;
+//		this.context = context;
 		frameRate = 60;
 		interval = 1000.0f / frameRate;
 		// interval = 1000 / frameRate;
@@ -287,86 +370,24 @@ public class Gameplay extends Application {
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
-	// Gameloop end
-	// public static void main(String[] args) {
-	// launch(args);
-	// }
-
-	// public void keyPressed(KeyEvent ke) {
-	// if (ke.getKeyCode() == KeyEvent.VK_UP) {
-	// // jumpPlayer();
-	// }
-	// // if (isPressed(KeyCode.W) && player.getTranslateY() >= 0) {
-	// // jumpPlayer();
-	// // }
-	// }
-
-	// @Override
-	// public void start(Stage primaryStage) throws Exception {
-	// initContent();
-	// Scene scene = new Scene(appRoot);
-	// // scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
-	// // scene.setOnKeyReleased(event -> keys.put(event.getCode(), false));
-	// //primaryStage.setTitle("Jetpack gameplay");
-	// primaryStage.setScene(scene);
-	// primaryStage.show();
-	// primaryStage.setResizable(false);
-	// AnimationTimer timer = new AnimationTimer() {
-	// @Override
-	// public void handle(long now) {
-	// update();
-	// }
-	// };
-	// timer.start();
-	// }
-
-	// public static void main(String[] args) {
-	//
-	// launch(args);
-	// }
-	
-	//TODO ivPlayer (imageView) unacceptable here
 	public void update() {
 		if (isPressed(KeyCode.W) && ivPlayer.getTranslateY() >= 0) {
-			System.out.println("test");
 			jumpPlayer();
 		}
-		// if(isPressed(KeyEvent.VK_UP)&& ivPlayer.getTranslateY()>=0) {
-		// jumpPlayer();
-		// }
+
 		if (playerGoDown.getY() < 10) {
 			playerGoDown = playerGoDown.add(0, 1);
 		}
 		movePlayerY((int) playerGoDown.getY());
 	}
 
-	public static void main(String[] args) throws Exception {
-		launch(args);
-	}
-
 	public void start(Stage primaryStage) throws Exception {
-		initContent();
 		ImageView ivPlayer = new ImageView(new Image("https://files.gamebanana.com/img/ico/sprays/5376ef308bef4.png"));
 		ivPlayer.setFitWidth(50);
 		ivPlayer.setFitHeight(50);
 		// ivPlayer.relocate(0, 240);
 		ivPlayer.relocate(playerX, 240);
-		appRoot.getChildren().addAll(ivPlayer);
-		appRoot.setMinWidth(720);
-		appRoot.setMinHeight(480);
-		Scene scene = new Scene(appRoot);
-		primaryStage.setScene(scene);
-		primaryStage.show();
-		primaryStage.setResizable(false);
-		primaryStage.setTitle("Jetpack gameplay");
-		scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
-		scene.setOnKeyReleased(event -> keys.put(event.getCode(), false));
-		AnimationTimer timer = new AnimationTimer() {
-			@Override
-			public void handle(long now) {
-				update();
-			}
-		};
-		timer.start();
+		appRoot.getChildren().addAll(ivPlayer);		
 	}
+
 }

@@ -17,7 +17,7 @@ public class CreditsMenu {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void displayCreditsMenu() {
+	public void displayMenu() {
 		// TODO Auto-generated method stub
 		
 	}

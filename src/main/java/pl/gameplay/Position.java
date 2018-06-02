@@ -1,65 +1,31 @@
 package pl.gameplay;
 
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import pl.main.PlayMenu;
 
-//public class Position extends Player{
-//
-//
-//	private final int playerX;
-//	private final int playerY;
-//	
-//	public Position(playerX,playerY) {
-//        this.playerX= playerX;
-//        this.playerY = playerY;
-//	}
-//Position(final int playerX, final int playerY) {
-//    this.playerX = playerX;
-//    this.playerY = playerY;
-//}
-public class Position extends Player{
-    private final int x;    // The X coordinate
-    private final int y;    // The Y coordinate
+public class Position extends Player {
+	private final int x;
+	private final int y;
 
-    /**
-     * The package-visible constructor. Not meant to be used outside the package.
-     *
-     * @param x The X coordinate.
-     * @param y The Y coordinate.
-     */
-    public Position(final int x, final int y) {
-        this.x = x;
-        this.y = y;
-    }
+	Position(final int x, final int y, ImageView imageView) {
+		super(imageView);
+		this.x = x;
+		this.y = y;
+	}
 
+	public int getPlayerX() {
+		return playerX;
+	}
 
+	public int getPlayerY() {
+		return playerY;
+	}
 
-//	Position(int PlayerX, int PlayerY) {
-//		this.PlayerX = playerX;
-//		this.PlayerY = playerY;
-//	}
-//	 Position(int PlayerX, int PlayerY) {
-//		this.playerX = playerX;
-//		this.PlayerY = playerY;
-//	}	
-
-	//	PlayerX = playerX;
-//	PlayerY = playerY;
-    public int getPlayerX() {
-        return playerX;
-    }
-
-    public int getPlayerY() {
-        return playerY;
-    }
-	
-	public Position translate(int x,int y) {
-		return new Position(playerX, playerY);
+	public Position translate(int x, int y) {
+		return new Position(playerX, playerY, imageView);
 	}
 
 	private void update() {
-		if (GameLoop.keyPressed() && Player.getTranslateY() >= 0) {
+		if (GameLoop.keyPressed() && this.getTranslateY() >= 0) {
 			jumpPlayer();
 		}
 		if (playerGoDown.getY() < 10) {
@@ -67,7 +33,7 @@ public class Position extends Player{
 		}
 		movePlayerY((int) playerGoDown.getY());
 
-		if (Player.getTranslateX() <= width) {
+		if (this.getTranslateX() <= width) {
 			// movePlayerX(5);
 			movePlayerRight();
 		}
@@ -78,10 +44,10 @@ public class Position extends Player{
 		movePlayerX((int) playerGoRight.getX());
 	}
 
-	private void jumpPlayer() {
+	public void jumpPlayer() {
 		if (Player.canJump()) {
 			Player.playerGoDown = playerGoDown.add(0, -10);
-			//canJump = false;
+			// canJump = false;
 		}
 	}
 

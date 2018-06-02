@@ -107,7 +107,7 @@ public class MainMenu {
 		}
 	}
 	
-	public boolean displayMainMenu(boolean gameJustStarted) {
+	public boolean displayMenu(boolean gameJustStarted) {
 		if(!gameJustStarted) {
 			gc.getCanvas().setTranslateX(1920);
 		}

@@ -23,7 +23,7 @@ public class AchievementsMenu {
 		BACK, ACHIEVEMENTS_LIST
 	}
 
-	public void displayAchievementsMenu() {
+	public void displayMenu() {
 		// TODO Auto-generated method stub
 		
 	}

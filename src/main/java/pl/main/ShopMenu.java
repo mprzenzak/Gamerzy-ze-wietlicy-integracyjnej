@@ -24,7 +24,7 @@ public class ShopMenu {
 		BACK, SHOP_LIST
 	}
 
-	public void displayShopMenu() {
+	public void displayMenu() {
 		// TODO Auto-generated method stub
 		
 	}

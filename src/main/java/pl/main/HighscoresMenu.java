@@ -18,7 +18,7 @@ public class HighscoresMenu {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void displayHighscoresMenu() {
+	public void displayMenu() {
 		// TODO Auto-generated method stub
 		
 	}

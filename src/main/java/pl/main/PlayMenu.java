@@ -112,7 +112,7 @@ public class PlayMenu {
 		
 	}
 	
-	public void displayPlayMenu() { //
+	public void displayMenu() { //
 		gc.getCanvas().setTranslateX(1920);
 		
 		drawButton(button_selected, "back", backX, backY, buttonHeight, buttonWidth);
@@ -309,12 +309,20 @@ public class PlayMenu {
 		}		
 	}
 
-	public PlayersNumberPressed getNumberOfPlayers() {
-		return playersNumberPressed;
+	public int getNumberOfPlayers() {
+		if (playersNumberPressed == PlayersNumberPressed.ONE) {
+			return 1;
+		} else {
+			return 2;
+		}
 	}
 
-	public ModePressed getMode() {
-		return modePressed;
+	public String getMode() {
+		if (modePressed == ModePressed.LEVELS) {
+			return "levels";
+		} else {
+			return "infinity";
+		}
 	}
 
 }

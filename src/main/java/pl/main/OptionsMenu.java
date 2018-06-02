@@ -19,7 +19,7 @@ public class OptionsMenu {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void displayOptionsMenu() {
+	public void displayMenu() {
 		// TODO Auto-generated method stub
 		
 	}
