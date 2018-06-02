@@ -3,10 +3,13 @@ package pl.main;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.HashMap;
+import java.util.Map;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -17,8 +20,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import pl.main.values.PaneCanvasGcSet;
-import pl.main.values.RootPaneAndGcSet;
+import pl.main.values.GroupPanesAndGcSet;
 import pl.main.values.ScreenAndPaneDimensions;
 
 public class Runner extends Application {
@@ -43,8 +47,6 @@ public class Runner extends Application {
 	int exitAnimationPosition;
 	int enterAnimationPosition;
 	
-	GraphicsContext bgGc;
-	GraphicsContext moneyGc;
 	int money;
 
 	public static void main(String[] args) {
@@ -54,9 +56,9 @@ public class Runner extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		// set stage
-		RootPaneAndGcSet rpgc = setPanes();
-		Scene scene = setStage(stage, rpgc);
-		createMenus(rpgc);
+		GroupPanesAndGcSet gpgc = setPanes();
+		Scene scene = setStage(stage, gpgc);
+		createMenus(gpgc);
 
 		keysActive = new HashMap<>(); // stores pressed keys
 		exitAnimationPosition = 0;
@@ -68,7 +70,7 @@ public class Runner extends Application {
 
 			@Override
 			public void handle(long now) {
-				update();
+				update(gpgc);
 				
 				if(keysActive.containsKey("ESCAPE")) {
 					exit();
@@ -100,23 +102,21 @@ public class Runner extends Application {
 		stage.show();
 	}
 
-	private void createMenus(RootPaneAndGcSet rpgc) {
-		mainMenu = new MainMenu(rpgc.getMainMenuGc());
-		playMenu = new PlayMenu(rpgc.getPlayMenuGc());
-		shopMenu = new ShopMenu(rpgc.getShopMenuGc());
-		achievementsMenu = new AchievementsMenu(rpgc.getAchievementsMenuGc());
-		highscoresMenu = new HighscoresMenu(rpgc.getHighscoresMenuGc());
-		optionsMenu = new OptionsMenu(rpgc.getOptionsMenuGc());
-		creditsMenu = new CreditsMenu(rpgc.getCreditsMenuGc());
-		bgGc = rpgc.getBgGc();
-		moneyGc = rpgc.getMoneyGc();
+	private void createMenus(GroupPanesAndGcSet gpgc) {
+		mainMenu = new MainMenu(gpgc.getGc("mainMenu"));
+		playMenu = new PlayMenu(gpgc.getGc("playMenu"));
+		shopMenu = new ShopMenu(gpgc.getGc("shopMenu"));
+		achievementsMenu = new AchievementsMenu(gpgc.getGc("achievementsMenu"));
+		highscoresMenu = new HighscoresMenu(gpgc.getGc("highscoresMenu"));
+		optionsMenu = new OptionsMenu(gpgc.getGc("optionsMenu"));
+		creditsMenu = new CreditsMenu(gpgc.getGc("creditsMenu"));
 
 		menuState = MenuState.PREPAREMENU;
 		submenuType = SubmenuType.MAIN;
 
 	}
 
-	private void paintMenuBg() {
+	private void paintMenuBg(GraphicsContext bgGc, GraphicsContext moneyGc) {
 		
 		Image bgMenuImage = new Image("file:resources\\bg.jpg");
 		bgGc.drawImage(bgMenuImage, 0, 0);
@@ -124,18 +124,17 @@ public class Runner extends Application {
 		Image coin = new Image("file:resources\\coin.png");
 		moneyGc.drawImage(coin, 1700, 15);
 	}
-
-	private Scene setStage(Stage stage, RootPaneAndGcSet rpgc) {
+	private Scene setStage(Stage stage, GroupPanesAndGcSet gpgc) {
 		stage.setTitle("Jetpack Joe");
 		stage.setFullScreen(true);
 		stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
-		Scene scene = new Scene(rpgc.getRootPane());
+		Scene scene = new Scene(gpgc.getPane("root"), Color.BLACK);
 		stage.setScene(scene);
 
 		return scene;
 	}
 
-	private RootPaneAndGcSet setPanes() {
+	private GroupPanesAndGcSet setPanes() {
 		ScreenAndPaneDimensions dimensions = getDimensions();
 
 		PaneCanvasGcSet pcgBg = setPaneComponents(dimensions);
@@ -164,20 +163,37 @@ public class Runner extends Application {
 
 		PaneCanvasGcSet pcgCreditsMenu = setPaneComponents(dimensions);
 		scaleCanvas(pcgCreditsMenu.getCanvas(), dimensions);
-
-		Pane rootPane = new Pane(pcgBg.getPane(), pcgMoney.getPane(), pcgMainMenu.getPane(), pcgPlayMenu.getPane(), pcgShopMenu.getPane(),
+		
+		PaneCanvasGcSet pcgPlayer = setPaneComponents(dimensions);
+		scaleCanvas(pcgPlayer.getCanvas(), dimensions);
+		
+		Pane gamePane = new Pane(pcgBg.getPane(), pcgMoney.getPane(), pcgPlayer.getPane());
+		
+		Pane menuPane = new Pane(pcgBg.getPane(), pcgMoney.getPane(), pcgMainMenu.getPane(), pcgPlayMenu.getPane(), pcgShopMenu.getPane(),
 				pcgAchievementsMenu.getPane(), pcgHighscoresMenu.getPane(), pcgOptionsMenu.getPane(),
-				pcgCreditsMenu.getPane()); // this is for animated transitions to be implemented soon
-		Canvas rootCanvas = new Canvas(dimensions.getPaneWidth(), dimensions.getPaneHeight());
-		GraphicsContext rootGc = rootCanvas.getGraphicsContext2D();
-		rootPane.getChildren().add(rootCanvas);
-		scaleCanvas(rootCanvas, dimensions);
+				pcgCreditsMenu.getPane());
+		
+		Pane rootPane = new Pane(menuPane, gamePane);
 
-		RootPaneAndGcSet rpgc = new RootPaneAndGcSet(rootPane, pcgBg.getGc(), pcgMoney.getGc(), pcgMainMenu.getGc(), pcgPlayMenu.getGc(),
-				pcgShopMenu.getGc(), pcgAchievementsMenu.getGc(), pcgHighscoresMenu.getGc(), pcgOptionsMenu.getGc(),
-				pcgCreditsMenu.getGc(), rootGc);
+		HashMap<String, Pane> pMap = new HashMap<>();
+		pMap.put("root", rootPane);
+		pMap.put("menu", menuPane);
+		pMap.put("game", gamePane);
+		
+		HashMap<String, GraphicsContext> gcMap = new HashMap<>();
+		gcMap.put("bg", pcgBg.getGc());
+		gcMap.put("money", pcgMoney.getGc());
+		gcMap.put("mainMenu", pcgMainMenu.getGc());
+		gcMap.put("playMenu", pcgPlayMenu.getGc());
+		gcMap.put("shopMenu", pcgShopMenu.getGc());
+		gcMap.put("achievementsMenu", pcgAchievementsMenu.getGc());
+		gcMap.put("highscoresMenu", pcgHighscoresMenu.getGc());
+		gcMap.put("optionsMenu", pcgOptionsMenu.getGc());
+		gcMap.put("creditsMenu", pcgCreditsMenu.getGc());
+		
+		GroupPanesAndGcSet gpgc = new GroupPanesAndGcSet(pMap, gcMap);
 
-		return rpgc;
+		return gpgc;
 	}
 	
 	private PaneCanvasGcSet setPaneComponents(ScreenAndPaneDimensions dim) {
@@ -207,19 +223,20 @@ public class Runner extends Application {
 	}
 
 	
-	private void update() { // TODO Auto-generated method stub
+	private void update(GroupPanesAndGcSet gpgc) { // TODO Auto-generated method stub
 		
 		switch (menuState) {
 		case PREPAREMENU:
-			paintMenuBg();
-			updateMoneyCounter();
-			
+			paintMenuBg(gpgc.getGc("bg"), gpgc.getGc("money"));
+			updateMoneyCounter(gpgc.getGc("money"));
+
 			hasGameJustStarted = mainMenu.displayMainMenu(hasGameJustStarted);
 			menuState = MenuState.SUBMENU;
 			break;
 		
 		case PREPARESUBMENU:
 			displayChosenSubmenu();
+
 			menuState = MenuState.MENU_ENTERANIMATION;
 			break;
 			
@@ -227,7 +244,7 @@ public class Runner extends Application {
 			if(exitAnimationPosition >= -1920) {
 				menuExitAnimation();
 				menuEnterAnimation();
-				
+
 			} else {
 				exitAnimationPosition = 0;
 				enterAnimationPosition = 1920;
@@ -238,7 +255,7 @@ public class Runner extends Application {
 		case SUBMENU:
 			userSelectMenuOption();
 			userSelectParallelMenuOption();
-			
+
 			if (userPressed("ENTER")) {
 				previousSubmenuType = submenuType;
 				getSelectedOption();
@@ -246,9 +263,10 @@ public class Runner extends Application {
 			break;
 
 		case PREPAREGAMEPLAY:
+		    fadeTransition(gpgc.getPane("menu"), 1, 0, 1000);
 //			playMenu.getMode();
 //			playMenu.getNumberOfPlayers();
-			
+		    menuState = MenuState.GAMEPLAY;
 			//-----------------------------------------------------------------------------------------------------------TU PRZYGOTOWANIE ROZGRYWKI
 			break;
 
@@ -261,7 +279,16 @@ public class Runner extends Application {
 		}
 	}
 
-	private void updateMoneyCounter() { 
+	private void fadeTransition(Node node, double fromValue, double toValue, int duration) {
+		FadeTransition ft = new FadeTransition(Duration.millis(duration), node);
+	    ft.setFromValue(fromValue);
+	    ft.setToValue(toValue);
+//	    node.setOpacity(toValue);
+	 
+	    ft.play();		
+	}
+
+	private void updateMoneyCounter(GraphicsContext moneyGc) { 
 		moneyGc.clearRect(1760, 0, 200, 200);
 		moneyGc.setFill(Color.WHITE);
 		moneyGc.setFont(Font.font("Consolas", 45));
