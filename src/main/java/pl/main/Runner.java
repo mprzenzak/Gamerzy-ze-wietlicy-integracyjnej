@@ -33,26 +33,26 @@ public class Runner extends Application {
 
 	static MenuState menuState;
 	static SubmenuType submenuType;
-	SubmenuType previousSubmenuType;
+	private SubmenuType previousSubmenuType;
 
-	MainMenu mainMenu;
-	PlayMenu playMenu;
-	ShopMenu shopMenu;
-	AchievementsMenu achievementsMenu;
-	HighscoresMenu highscoresMenu;
-	OptionsMenu optionsMenu;
-	CreditsMenu creditsMenu;
+	private MainMenu mainMenu;
+	private PlayMenu playMenu;
+	private ShopMenu shopMenu;
+	private AchievementsMenu achievementsMenu;
+	private HighscoresMenu highscoresMenu;
+	private OptionsMenu optionsMenu;
+	private CreditsMenu creditsMenu;
 	
-	Gameplay game;
+	private Gameplay game;
 
-	HashMap<String, KeyState> keysActive;
+	private HashMap<String, KeyState> keysActive;
 	
-	BooleanValue next;
-	boolean hasGameJustStarted;
-	int exitAnimationPosition;
-	int enterAnimationPosition;
+	private BooleanValue next;
+	private boolean hasGameJustStarted;
+	private int exitAnimationPosition;
+	private int enterAnimationPosition;
 	
-	int money;
+	private int money;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -219,7 +219,7 @@ public class Runner extends Application {
 	
 	private PaneCanvasGcSet setPaneComponents(ScreenAndPaneDimensions dim) {
 		Pane pane = new Pane();
-		Canvas canvas = new Canvas(dim.getPaneWidth(), dim.getPaneHeight());
+		Canvas canvas = new Canvas(dim.getPaneWidth()*2, dim.getPaneHeight());
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		pane.getChildren().add(canvas);
 
@@ -297,7 +297,7 @@ public class Runner extends Application {
 		case GAMEPLAY:
 			if (next.getX()) {
 				//-----------------------------------------------------------------------------------------------------------TU PETLA SAMEJ ROZGRYWKI
-				game.play();
+				game.play(keysActive);
 			}
 			break;
 

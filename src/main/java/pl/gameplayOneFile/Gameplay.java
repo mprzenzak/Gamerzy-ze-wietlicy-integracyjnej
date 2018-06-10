@@ -13,28 +13,36 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import pl.main.Runner;
+import pl.main.Runner.KeyState;
 import pl.main.values.GroupPanesAndGcSet;
 
 public class Gameplay {
-	
+
 	private HashMap<KeyCode, Boolean> keys = new HashMap<KeyCode, Boolean>();
 	private ArrayList<Node> blocks = new ArrayList<Node>();
 	public GraphicsContext gc;
 	private Pane appRoot = new Pane();
 	public int levelWidth = 720;
 	ImageView ivPlayer;
-	
+
 	private GameState gameState;
+	private PlayerState player1State;
+	private PlayerState player2State;
 	private Player player1;
 	private Player player2;
-	
+
 	GraphicsContext bgGc;
 	GraphicsContext valuesGc;
 	private int money;
 	private int numberOfPlayers;
+	private boolean isMultiplayer;
 	private String mode;
-	
+
 	private int points;
+	private int bgXPosition;
+	private int bgXPositionChangeSpeed;
+	private int floorBorder, ceilingBorder, rightWallBorder;
 
 	public Gameplay(int money, String mode, int numberOfPlayers) { // TODO Auto-generated constructor stub
 		this.money = money;
@@ -46,41 +54,65 @@ public class Gameplay {
 	public void initContent(GroupPanesAndGcSet gpgc) {
 		bgGc = gpgc.getGc("gameBg");
 		valuesGc = gpgc.getGc("gameMoney");
-		
+
 		valuesGc.setFill(Color.WHITE);
 		valuesGc.setFont(Font.font("Consolas", 45));
+
+		floorBorder = 1080 - 50;
+		ceilingBorder = 70;
+		rightWallBorder = 1920/3;
 		
 		paintScene();
 		updateMoneyCounter();
 		updatePointsCounter();
+
+		Image player1img = new Image("file:resources\\player1.png");
+		ImageView ivPlayer1 = new ImageView(player1img);
+		gpgc.getPane("game").getChildren().add(ivPlayer1);
 		
-		player1 = new Player();
+		player1 = new Player(floorBorder, ivPlayer1);
+
 		if (numberOfPlayers == 2) {
-			player2 = new Player();
+			Image player2img = new Image("file:resources\\player2.png");
+			ImageView ivPlayer2 = new ImageView(player2img);
+			gpgc.getPane("game").getChildren().add(ivPlayer2);
+
+			player2 = new Player(floorBorder, ivPlayer2);
+			
+			isMultiplayer = true;
 		}
+
+		bgXPosition = 0;
+		bgXPositionChangeSpeed = 5;
+
+		player1State = PlayerState.NORMAL;
+		player2State = PlayerState.NORMAL;
+		
+		gameState = GameState.START;
 	}
 
 	private void paintScene() { // TODO Auto-generated method stub
 		Image bgImage = new Image("file:resources\\gameBg.jpg");
 		bgGc.drawImage(bgImage, 0, 0);
-		
+		bgGc.drawImage(bgImage, 1920, 0);
+
 		Image coin = new Image("file:resources\\coin.png");
 		valuesGc.drawImage(coin, 1700, 15);
 	}
 
-	private void updateMoneyCounter() { 
+	private void updateMoneyCounter() {
 		valuesGc.clearRect(1760, 0, 200, 200);
-		
+
 		String moneyString = Integer.toString(money);
 		while (moneyString.length() < 5) {
 			moneyString = "0" + moneyString;
 		}
-		valuesGc.fillText(moneyString, 1760, 55);		
+		valuesGc.fillText(moneyString, 1760, 55);
 	}
-	
+
 	private void updatePointsCounter() {
 		valuesGc.clearRect(15, 0, 800, 200);
-		
+
 		String pointsString = Integer.toString(points);
 		while (pointsString.length() < 10) {
 			pointsString = "0" + pointsString;
@@ -90,54 +122,100 @@ public class Gameplay {
 		} else {
 			pointsString = "Meters: " + pointsString;
 		}
-		
-		valuesGc.fillText(pointsString, 15, 55);		
+
+		valuesGc.fillText(pointsString, 15, 55);
 	}
-	
-	public void play() { // TODO Auto-generated method stub
+
+	public void play(HashMap<String, KeyState> keysActive) { // TODO Auto-generated method stub
 		switch (gameState) {
 		case START: //
 			playersEnter();
 			break;
-			
+
 		case PLAYING: //
 			updateBg();
+			updatePlayer(keysActive);
+			updateEntities();
 			break;
-			
+
 		case PAUSE: //
 			break;
-			
+
 		case KILLED: //
 			break;
-			
+
 		case REVIVESCREEN: //
 			break;
-			
+
 		case REVIVED: //
 			break;
-			
+
 		case GAMEOVER: //
-			
+
 		}
 	}
-	
-	private void updateBg() {
+
+	private void updateEntities() {
 		// TODO Auto-generated method stub
 		
 	}
-	
+
+	private void updatePlayer(HashMap<String, KeyState> keysActive) {
+		if (keysActive.containsKey("W")) { //TODO change so it uses keys from options
+			player1.moveUp(ceilingBorder);
+		}
+		
+		if (keysActive.containsKey("S")) {
+			player1.moveDown(floorBorder);
+		}
+		
+		if (keysActive.containsKey("D")) {
+			player1.moveRight(rightWallBorder);
+		}
+		
+		if (keysActive.containsKey("A")) {
+			player1.moveLeft(0);
+		}
+		
+		if (player1State == PlayerState.HIT) {
+			
+		}
+	}
+
+	private void updateBg() {
+		bgXPosition -= bgXPositionChangeSpeed;
+
+		bgGc.getCanvas().setTranslateX(bgXPosition);
+
+		if (bgXPosition < -1920) {
+			bgXPosition = 0;
+		}
+	}
+
 	public void playersEnter() {
-		if(numberOfPlayers == 1) {
-			player1.enter(500);
+
+		boolean animation1Finished = player1.enter(100);
+		boolean animation2Finished;
+		
+		if (isMultiplayer) {
+			animation2Finished = player2.enter(200);
 		} else {
-			player1.enter(400);
-			player2.enter(600);
+			animation2Finished = true;
+		}
+		
+		if (animation1Finished && animation2Finished) {
+			gameState = GameState.PLAYING;
 		}
 	}
 
 	private enum GameState {
 		START, PLAYING, PAUSE, KILLED, REVIVESCREEN, REVIVED, GAMEOVER
 	}
+	
+	private enum PlayerState {
+		NORMAL, HIT, DEAD
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Player
 	public static Point2D playerGoDown = new Point2D(0, 0);
@@ -324,7 +402,7 @@ public class Gameplay {
 	float interval;
 
 	public void GameLoop(final GraphicsContext context) {
-//		this.context = context;
+		// this.context = context;
 		frameRate = 60;
 		interval = 1000.0f / frameRate;
 		// interval = 1000 / frameRate;
@@ -387,7 +465,7 @@ public class Gameplay {
 		ivPlayer.setFitHeight(50);
 		// ivPlayer.relocate(0, 240);
 		ivPlayer.relocate(playerX, 240);
-		appRoot.getChildren().addAll(ivPlayer);		
+		appRoot.getChildren().addAll(ivPlayer);
 	}
 
 }
