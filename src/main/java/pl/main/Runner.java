@@ -173,8 +173,8 @@ public class Runner extends Application {
 		scaleCanvas(pcgCreditsMenu.getCanvas(), dimensions);
 		
 		//game components
-		PaneCanvasGcSet pcgPlayer = setPaneComponents(dimensions);
-		scaleCanvas(pcgPlayer.getCanvas(), dimensions);
+		PaneCanvasGcSet pcgEntities = setPaneComponents(dimensions);
+		scaleCanvas(pcgEntities.getCanvas(), dimensions);
 		
 		PaneCanvasGcSet pcgGameBg = setPaneComponents(dimensions);
 		scaleCanvas(pcgGameBg.getCanvas(), dimensions);
@@ -183,7 +183,7 @@ public class Runner extends Application {
 		scaleCanvas(pcgGameMoney.getCanvas(), dimensions);
 		
 		//grouping panes
-		Pane gamePane = new Pane(pcgGameBg.getPane(), pcgGameMoney.getPane(), pcgPlayer.getPane());
+		Pane gamePane = new Pane(pcgGameBg.getPane(), pcgGameMoney.getPane(), pcgEntities.getPane());
 		
 		Pane menuPane = new Pane(pcgBg.getPane(), pcgMoney.getPane(), pcgMainMenu.getPane(), pcgPlayMenu.getPane(), pcgShopMenu.getPane(),
 				pcgAchievementsMenu.getPane(), pcgHighscoresMenu.getPane(), pcgOptionsMenu.getPane(),
@@ -209,7 +209,7 @@ public class Runner extends Application {
 		
 		gcMap.put("gameBg", pcgGameBg.getGc());
 		gcMap.put("gameMoney", pcgGameMoney.getGc());
-		gcMap.put("player", pcgPlayer.getGc());
+		gcMap.put("entities", pcgEntities.getGc());
 
 		
 		GroupPanesAndGcSet gpgc = new GroupPanesAndGcSet(pMap, gcMap);

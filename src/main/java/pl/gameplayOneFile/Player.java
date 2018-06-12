@@ -10,7 +10,7 @@ public class Player {
 	
 	private ImageView iv;
 		
-	public Player(int floorBorder, ImageView iv) {
+	public Player(int y, ImageView iv) {
 		this.iv = iv;
 		
 		this.height = (int) iv.getLayoutBounds().getHeight();
@@ -18,22 +18,22 @@ public class Player {
 
 		this.x = 0 - width;
 		this.iv.setTranslateX(this.x);
-		this.y = floorBorder - height;
+		this.y = y;
 		this.iv.setTranslateY(this.y);
 		
 		this.speed = 8;
 	}
 
-	public boolean enter(int targetX) {
-		iv.setTranslateX(x);
-		x += speed;
-		
-		if(x >= targetX) {
+	public boolean enter() {
+		if(x < 200) {
+			iv.setTranslateX(x);
+			x += speed;
+			return false;
+
+		} else {
 			return true;
 		}
-		return false;
 	}
-
 
 	public void moveUp(int border) {
 		if (y > border) {
@@ -79,4 +79,11 @@ public class Player {
 		}
 	}
 
+	public void shoot() {
+		
+	}
+	
+	public void getHit() {
+		
+	}
 }
