@@ -8,11 +8,11 @@ public class BooleanValue {
 		this.x = x;
 	}
 
-	public boolean getX() {
+	public boolean getValue() {
 		return x;
 	}
 
-	public void setX(boolean x) {
+	public void setValue(boolean x) {
 		this.x = x;
 	}
 	

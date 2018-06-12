@@ -52,8 +52,16 @@ public class EnemiesMap {
 	}
 
 	public boolean checkIfCleared() {
-		// TODO Auto-generated method stub
-		return false;
+		if (enemies.isEmpty()) {
+			return true;
+			
+		} else {
+			return false;
+		}
 	}
 
+	public ArrayList<Enemy> getEnemies() {
+		return enemies;
+	}
+	
 }

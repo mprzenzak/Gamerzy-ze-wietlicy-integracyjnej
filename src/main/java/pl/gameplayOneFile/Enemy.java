@@ -26,4 +26,20 @@ public abstract class Enemy {
 	public int getRightBorder() {
 		return x + width;
 	}
+
+	public double getX() {
+		return x;
+	}
+
+	public double getY() {
+		return y;
+	}
+
+	public double getWidth() {
+		return width;
+	}
+
+	public double getHeight() {
+		return height;
+	}
 }

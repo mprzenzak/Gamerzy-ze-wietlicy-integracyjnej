@@ -289,13 +289,13 @@ public class Runner extends Application {
 		    SequentialTransition transition = transitionPanes(gpgc.getPane("menu"), gpgc.getPane("game"));
 		    next = new BooleanValue(false);
 		    
-			transition.setOnFinished(e -> next.setX(true));
+			transition.setOnFinished(e -> next.setValue(true));
 			
 			menuState = MenuState.GAMEPLAY;
 			break;
 
 		case GAMEPLAY:
-			if (next.getX()) {
+			if (next.getValue()) {
 				//-----------------------------------------------------------------------------------------------------------TU PETLA SAMEJ ROZGRYWKI
 				game.play(keysActive);
 			}

@@ -49,4 +49,24 @@ public class Bullet {
 	public int getRightBorder() {
 		return x + width;
 	}
+
+	public int getLeftBorder() {
+		return x;
+	}
+
+	public double getX() {
+		return x;
+	}
+
+	public double getY() {
+		return y;
+	}
+
+	public double getWidth() {
+		return width;
+	}
+
+	public double getHeight() {
+		return height;
+	}
 }

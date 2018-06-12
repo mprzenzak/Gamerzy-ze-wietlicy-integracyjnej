@@ -8,7 +8,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import pl.gameplayOneFile.Gameplay.PlayerState;
 import pl.main.Runner.KeyState;
 import pl.main.values.GroupPanesAndGcSet;
 
@@ -16,13 +18,14 @@ public class Gameplay {
 
 	private GameState gameState;
 	private LevelStage levelStage;
-	private PlayerState player1State;
-	private PlayerState player2State;
+	private static PlayerState player1State;
+	private static PlayerState player2State;
 	private Player player1;
 	private Player player2;
 	
 	private EnemiesMap enemiesMap;
 	static ArrayList<Bullet> bullets;
+	static ArrayList<Bullet> playerBullets;
 
 	GraphicsContext bgGc;
 	GraphicsContext valuesGc;
@@ -71,24 +74,17 @@ public class Gameplay {
 		updateMoneyCounter();
 		updatePointsCounter();
 
-		Image player1img = new Image("file:resources\\player1.png");
-		ImageView ivPlayer1 = new ImageView(player1img);
-		gamePane.getChildren().add(ivPlayer1);
-		
-		player1 = new Player(400, ivPlayer1);
+		player1 = new Player(gamePane, 400, new Image("file:resources\\player1.png"));
 
 		if (numberOfPlayers == 2) {
-			Image player2img = new Image("file:resources\\player2.png");
-			ImageView ivPlayer2 = new ImageView(player2img);
-			gamePane.getChildren().add(ivPlayer2);
-
-			player2 = new Player(700, ivPlayer2);
+			player2 = new Player(gamePane, 700, new Image("file:resources\\player2.png"));
 			
 			isMultiplayer = true;
 		}
 
 		enemiesMap = new EnemiesMap();
 		bullets = new ArrayList<>();
+		playerBullets = new ArrayList<>();
 	}
 
 	private void paintScene() { // TODO Auto-generated method stub
@@ -161,9 +157,18 @@ public class Gameplay {
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets.get(i).move();
 			
-			if(bullets.get(i).getRightBorder() < 0) {
+			if(bullets.get(i).getRightBorder() < 0 || bullets.get(i).getLeftBorder() > 1920) {
 				bullets.get(i).disappear();
 				bullets.remove(i);
+			}
+		}
+		
+		for (int i = 0; i < playerBullets.size(); i++) {
+			playerBullets.get(i).move();
+			
+			if(playerBullets.get(i).getLeftBorder() > 1920) {
+				playerBullets.get(i).disappear();
+				playerBullets.remove(i);
 			}
 		}
 	}
@@ -259,6 +264,12 @@ public class Gameplay {
 			player1.moveLeft(0);
 		}
 		
+		if (keysActive.containsKey("SPACE")) {
+			player1.shoot();
+		} else {
+			player1.resetTimer(); //bad idea, resets every cycle unnecessarily
+		}
+		
 		if (isMultiplayer) {
 			if (keysActive.containsKey("UP")) { //TODO change so it uses keys from options
 				player2.moveUp(ceilingBorder);
@@ -275,12 +286,63 @@ public class Gameplay {
 			if (keysActive.containsKey("LEFT")) {
 				player2.moveLeft(0);
 			}
+			
+			if (keysActive.containsKey("ENTER")) {
+				player2.shoot();
+			} else {
+				player2.resetTimer(); //
+			}
+		}
+				
+		if (player1State == PlayerState.NORMAL && hasCollided(player1)) {
+			player1State = PlayerState.HIT;
+			 player1.getHit(player1State);
 		}
 		
+		if (player1State == PlayerState.HIT && player1.getHasCooldownEnded()) {
+			player1State = PlayerState.NORMAL;
+		}
+	}
+
+	private boolean hasCollided(Player player) {
+		Rectangle p = new Rectangle(player.getX(), player.getY(), player.getWidth(), player.getHeight());
 		
-//		if (player1State == PlayerState.HIT) {
-//			player1.getHit();
-//		}
+		for (Bullet bullet : bullets) {			
+			if (p.intersects(bullet.getX(), bullet.getY(), bullet.getWidth(), bullet.getHeight())) {
+				if (player == player1) {
+					if (player1State == PlayerState.NORMAL) {
+						bullet.disappear();
+						bullets.remove(bullet);
+					}
+				} else {
+					if (player2State == PlayerState.NORMAL) {
+						bullet.disappear();
+						bullets.remove(bullet);
+					}
+				}
+				
+				return true;
+			}
+		}
+		
+		for (Enemy enemy : enemiesMap.getEnemies()) {			
+			if (p.intersects(enemy.getX(), enemy.getY(), enemy.getWidth(), enemy.getHeight())) {
+				if (player == player1) {
+					if (player1State == PlayerState.NORMAL) {
+						enemy.disappear();
+						enemiesMap.getEnemies().remove(enemy);
+					}
+				} else {
+					if (player2State == PlayerState.NORMAL) {
+						enemy.disappear();
+						enemiesMap.getEnemies().remove(enemy);
+					}
+				}
+				
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void updateBg() {
@@ -292,6 +354,7 @@ public class Gameplay {
 			bgXPosition = 0;
 		}
 	}
+	
 
 	public void playersEnter() {
 
@@ -313,9 +376,10 @@ public class Gameplay {
 		START, PLAYING, PAUSE, KILLED, REVIVESCREEN, REVIVED, GAMEOVER
 	}
 	
-	private enum PlayerState {
+	public enum PlayerState {
 		NORMAL, HIT, DEAD
 	}
+	
 	
 	private enum LevelStage {
 		PREPARE1, LV1, PREPARE2, LV2, PREPARE3, LV3, PREPARE4, LV4, PREPARE5, LV5

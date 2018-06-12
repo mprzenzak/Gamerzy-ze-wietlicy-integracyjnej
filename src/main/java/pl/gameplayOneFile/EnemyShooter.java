@@ -31,10 +31,6 @@ public class EnemyShooter extends Enemy {
 		}
 	}
 	
-	public void die() {
-		
-	}
-	
 	@Override
 	public void move() {
 		if (timer % 50 == 0) {
