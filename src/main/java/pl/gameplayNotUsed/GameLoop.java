@@ -1,4 +1,4 @@
-package pl.gameplay;
+package pl.gameplayNotUsed;
 
 import javafx.scene.canvas.GraphicsContext;
 

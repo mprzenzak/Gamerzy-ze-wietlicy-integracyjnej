@@ -1,4 +1,4 @@
-package pl.gameplay;
+package pl.gameplayNotUsed;
 
 public class LevelData {
 public static final String[] LEVEL1 = new String[] {

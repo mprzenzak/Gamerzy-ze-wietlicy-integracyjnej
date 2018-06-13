@@ -8,7 +8,6 @@ import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.animation.SequentialTransition;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -24,10 +23,10 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import pl.main.values.PaneCanvasGcSet;
+import pl.gameplay.Gameplay;
 import pl.main.values.BooleanValue;
 import pl.main.values.GroupPanesAndGcSet;
-import pl.main.values.ScreenAndPaneDimensions;
-import pl.gameplayOneFile.Gameplay;;
+import pl.main.values.ScreenAndPaneDimensions;;
 
 public class Runner extends Application {
 

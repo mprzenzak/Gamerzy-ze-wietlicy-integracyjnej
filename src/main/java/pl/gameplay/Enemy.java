@@ -1,4 +1,4 @@
-package pl.gameplayOneFile;
+package pl.gameplay;
 
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
