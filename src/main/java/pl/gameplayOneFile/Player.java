@@ -1,11 +1,8 @@
 package pl.gameplayOneFile;
 
-import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
-import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
-import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -107,41 +104,40 @@ public class Player {
 		timer++;
 	}
 
-	public void getHit(PlayerState ps) {
+	public PlayerState getHit() {
 		health--;
 		
 		hasCooldownEnded = new BooleanValue(false);
 		
 		if (health <= 0) {
-			ps = PlayerState.DEAD;
+			return PlayerState.DEAD;
 			
 		} else {
 			SequentialTransition transition = transition();
-//			Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), e -> iv.setVisible(false)),
-//											new KeyFrame(Duration.seconds(0.5), e -> iv.setVisible(true)));
-//			timeline.setCycleCount(3);
-//			timeline.play();
 			transition.play();
 			
 			transition.setOnFinished(e -> hasCooldownEnded.setValue(true));
+			
+			return PlayerState.HIT;
 		}
 	}
 
 	private SequentialTransition transition() {
-		FadeTransition fadeOut = new FadeTransition(Duration.seconds(0), iv);
+		FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.001), iv);
 		fadeOut.setFromValue(1);
 		fadeOut.setToValue(0);
 		
-		PauseTransition pause = new PauseTransition(Duration.seconds(0.1));
+		PauseTransition pause = new PauseTransition(Duration.seconds(0.3));
 		
-		FadeTransition fadeIn = new FadeTransition(Duration.seconds(0), iv);
+		FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.001), iv);
 		fadeIn.setFromValue(0);
 		fadeIn.setToValue(1);
 		
-		PauseTransition pause2 = new PauseTransition(Duration.seconds(0.1));
+		PauseTransition pause2 = new PauseTransition(Duration.seconds(0.3));
 		
 		SequentialTransition st = new SequentialTransition(fadeOut, pause, fadeIn, pause2);
-		st.setCycleCount(10);
+
+		st.setCycleCount(5);
 		
 		return st;
 	}
@@ -169,6 +165,10 @@ public class Player {
 	
 	public boolean getHasCooldownEnded() {
 		return hasCooldownEnded.getValue();
+	}
+
+	public int getHealth() {
+		return health;		
 	}
 	
 	

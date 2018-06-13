@@ -75,19 +75,53 @@ public class Gameplay {
 		updatePointsCounter();
 
 		player1 = new Player(gamePane, 400, new Image("file:resources\\player1.png"));
+		updateHearts(player1);
 
 		if (numberOfPlayers == 2) {
 			player2 = new Player(gamePane, 700, new Image("file:resources\\player2.png"));
-			
+			updateHearts(player2);
+
 			isMultiplayer = true;
 		}
-
+		
 		enemiesMap = new EnemiesMap();
 		bullets = new ArrayList<>();
 		playerBullets = new ArrayList<>();
 	}
 
-	private void paintScene() { // TODO Auto-generated method stub
+	private void updateHearts(Player player) {
+		Image heart1 = new Image("file:resources\\heart.png");
+		Image heart2 = new Image("file:resources\\heart.png");
+		Image heart3 = new Image("file:resources\\heart.png");
+		int y = 1080-65;
+		int x1, x2, x3;
+		
+		if (player == player1) {
+			x1 = 15;
+			x2 = 15 + 65;
+			x3 = 15 + 2*65;
+		} else {
+			x1 = 1920 - 3*65;
+			x2 = 1920 - 2*65;
+			x3 = 1920 - 65;
+		}
+		
+		switch (player.getHealth()) {
+		case 0:
+			heart1 = new Image("file:resources\\emptyHeart.png");
+		case 1:
+			heart2 = new Image("file:resources\\emptyHeart.png");
+		case 2:
+			heart3 = new Image("file:resources\\emptyHeart.png");
+		}
+		
+		valuesGc.clearRect(x1, y, 180, 50);
+		valuesGc.drawImage(heart1, x1, y);
+		valuesGc.drawImage(heart2, x2, y);
+		valuesGc.drawImage(heart3, x3, y);
+	}
+
+	private void paintScene() { 
 		Image bgImage = new Image("file:resources\\gameBg.jpg");
 		bgGc.drawImage(bgImage, 0, 0);
 		bgGc.drawImage(bgImage, 1920, 0);
@@ -270,6 +304,8 @@ public class Gameplay {
 			player1.resetTimer(); //bad idea, resets every cycle unnecessarily
 		}
 		
+		playerCollisions(player1);
+		
 		if (isMultiplayer) {
 			if (keysActive.containsKey("UP")) { //TODO change so it uses keys from options
 				player2.moveUp(ceilingBorder);
@@ -292,15 +328,50 @@ public class Gameplay {
 			} else {
 				player2.resetTimer(); //
 			}
+			
+			playerCollisions(player2);
+			
+			if (player1State == PlayerState.DEAD && player2State == PlayerState.DEAD) {
+				gameState = GameState.KILLED;
+			}
+			
+			if (player1State == PlayerState.DEAD) {
+				//TODO stop existing
+			}
+			if (player2State == PlayerState.DEAD) {
+				//TODO stop existing
+			}
+			
+		} else {
+			if (player1State == PlayerState.DEAD) {
+				gameState = GameState.KILLED;
+			}
 		}
 				
-		if (player1State == PlayerState.NORMAL && hasCollided(player1)) {
-			player1State = PlayerState.HIT;
-			 player1.getHit(player1State);
+		
+	}
+
+	private void playerCollisions(Player player) {
+		PlayerState playerState;
+		if (player == player1) {
+			playerState = player1State;
+		} else {
+			playerState = player2State;
 		}
 		
-		if (player1State == PlayerState.HIT && player1.getHasCooldownEnded()) {
-			player1State = PlayerState.NORMAL;
+		if (playerState == PlayerState.NORMAL && hasCollided(player)) {
+			playerState = player.getHit();
+			updateHearts(player);
+		}
+		
+		if (playerState == PlayerState.HIT && player.getHasCooldownEnded()) {
+			playerState = PlayerState.NORMAL;
+		}
+		
+		if (player == player1) {
+			player1State = playerState;
+		} else {
+			player2State = playerState;
 		}
 	}
 
