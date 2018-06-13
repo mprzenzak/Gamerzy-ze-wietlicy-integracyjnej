@@ -51,7 +51,7 @@ public class EnemiesMap {
 		}
 	}
 
-	public boolean checkIfCleared() {
+	public boolean checkIfClear() {
 		if (enemies.isEmpty()) {
 			return true;
 			

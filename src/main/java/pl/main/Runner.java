@@ -296,7 +296,6 @@ public class Runner extends Application {
 
 		case GAMEPLAY:
 			if (next.getValue()) {
-				//-----------------------------------------------------------------------------------------------------------TU PETLA SAMEJ ROZGRYWKI
 				game.play(keysActive);
 			}
 			break;

@@ -110,6 +110,7 @@ public class Player {
 		hasCooldownEnded = new BooleanValue(false);
 		
 		if (health <= 0) {
+			disappear();
 			return PlayerState.DEAD;
 			
 		} else {
@@ -171,5 +172,7 @@ public class Player {
 		return health;		
 	}
 	
-	
+	public void disappear() {
+		iv.setImage(null);
+	}
 }

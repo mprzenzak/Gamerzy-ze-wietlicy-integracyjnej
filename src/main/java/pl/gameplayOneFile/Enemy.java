@@ -8,6 +8,8 @@ public abstract class Enemy {
 	int x, y;
 	int height, width;
 	int speed;
+	int health;
+	int points;
 	
 	ImageView iv;
 	Pane pane;
@@ -16,11 +18,18 @@ public abstract class Enemy {
 	boolean isMoving;
 
 	public void move() {
-		
 	}
 	
 	public void disappear() {
 		iv.setImage(null);
+	}
+	
+	public void getHit() {
+		health--;
+	}
+	
+	public int getHealth() {
+		return health;
 	}
 	
 	public int getRightBorder() {
@@ -41,5 +50,9 @@ public abstract class Enemy {
 
 	public double getHeight() {
 		return height;
+	}
+
+	public int getPoints() {
+		return points;
 	}
 }

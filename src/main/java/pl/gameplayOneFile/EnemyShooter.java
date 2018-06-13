@@ -21,6 +21,9 @@ public class EnemyShooter extends Enemy {
 		this.width = (int) iv.getLayoutBounds().getWidth();
 		
 		this.speed = 2;
+		this.health = 3;
+		this.points = 3;
+		
 		this.timer = 0;
 	}
 	
@@ -50,7 +53,4 @@ public class EnemyShooter extends Enemy {
 		timer++;
 	}
 	
-	public void getHit() {
-		
-	}
 }
